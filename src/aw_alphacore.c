@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) Alphawave IP Inc. All rights reserved.
+ */
  
 
  
@@ -499,6 +503,13 @@ int aw_pmd_fes_loopback_set(mss_access_t *mss, uint32_t fes_loopback_enable) {
     return AW_ERR_CODE_NONE;
 }
 
+int aw_pmd_analog_loopback_txfir_set(mss_access_t *mss, aw_analog_loopback_txfir_config_t *nes_txfir_cfg){
+     
+    uint32_t fir_val;
+    fir_val = ((nes_txfir_cfg->nes_post1 & 0xF) << 4 ) | ((nes_txfir_cfg->nes_c0) & 0xF);
+    CHECK(pmd_write_field(mss, TX_ADDR, TX_NES_LOOPBACK_FIR_A_MASK, TX_NES_LOOPBACK_FIR_A_OFFSET, fir_val));
+    return AW_ERR_CODE_NONE;
+}
 
 int aw_pmd_nep_loopback_set(mss_access_t *mss, uint32_t nep_loopback_enable){
      
@@ -1312,3 +1323,41 @@ int aw_pmd_anlt_fastsim_timer_set(mss_access_t *mss) {
 }
 
 
+ 
+ 
+ 
+int aw_pmd_snr_vld_hys_thresh_set_from_target_snr(mss_access_t *mss, uint32_t target_snr_low, uint32_t target_snr_high){
+    uint32_t thresh_low_reg_value  = round(pow(10, target_snr_low/10.0));
+    uint32_t thresh_high_reg_value = round(pow(10, target_snr_high/10.0));
+
+    USR_PRINTF("Target SNR is between %d dB and %d dB.\n", target_snr_low, target_snr_high);
+    USR_PRINTF("Setting register values for snr valid thresholds: thresh_low_reg_value=%d and thresh_high_reg_value=%d.\n", thresh_low_reg_value, thresh_high_reg_value);
+
+    CHECK(pmd_write_field(mss, RX_SNR_REG4_ADDR, RX_SNR_REG4_VLD_HYS_THRESH_LOW_NT_MASK,  RX_SNR_REG4_VLD_HYS_THRESH_LOW_NT_OFFSET,  thresh_low_reg_value ));
+    CHECK(pmd_write_field(mss, RX_SNR_REG5_ADDR, RX_SNR_REG5_VLD_HYS_THRESH_HIGH_NT_MASK, RX_SNR_REG5_VLD_HYS_THRESH_HIGH_NT_OFFSET, thresh_high_reg_value));
+
+    return AW_ERR_CODE_NONE;
+}
+ 
+ 
+int aw_pmd_snr_vld_hys_thresh_set_recommended(mss_access_t *mss, uint32_t nrz_mode){
+    uint32_t target_snr_low  = (nrz_mode==1) ? 20 : 12;  
+    uint32_t target_snr_high = (nrz_mode==1) ? 25 : 15;  
+
+    aw_pmd_snr_vld_hys_thresh_set_from_target_snr(mss, target_snr_low, target_snr_high);
+
+    return AW_ERR_CODE_NONE;
+}
+
+int aw_pmd_snr_mon_enable_set(mss_access_t *mss, uint32_t nrz_mode, uint32_t mon_enable){
+    CHECK(pmd_write_field(mss, RST_DBE_RX_ADDR,  RST_DBE_RX_SNR_BA_MASK,           RST_DBE_RX_SNR_BA_OFFSET,           1         ));
+    CHECK(pmd_write_field(mss, RX_SNR_REG1_ADDR, RX_SNR_REG1_MON_NRZ_MODE_NT_MASK, RX_SNR_REG1_MON_NRZ_MODE_NT_OFFSET, nrz_mode  ));  
+    CHECK(pmd_write_field(mss, RX_SNR_REG1_ADDR, RX_SNR_REG1_MON_ENABLE_A_MASK,    RX_SNR_REG1_MON_ENABLE_A_OFFSET,    mon_enable));
+    return AW_ERR_CODE_NONE;
+}
+
+ 
+int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable){
+    CHECK(pmd_write_field(mss, RX_SNR_REG1_ADDR, RX_SNR_REG1_VLD_ENABLE_A_MASK, RX_SNR_REG1_VLD_ENABLE_A_OFFSET, vld_enable));
+    return AW_ERR_CODE_NONE;
+}
