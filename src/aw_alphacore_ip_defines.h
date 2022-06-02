@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) Alphawave IP Inc. All rights reserved.
+ */
  
 
  
@@ -7,7 +11,7 @@
 
 #define AW_FFE_NUM_TAPS                          18
 #define AW_MAIN_TAP_NUM                          13
-#define AW_NUM_LANES                             2
+#define AW_NUM_LANES                             4
 #define AW_NUM_BRANCHES                          64
 #define AW_SRAM_SIZE                             8192
 #define AW_ADC_DATA_WIDTH                        8
