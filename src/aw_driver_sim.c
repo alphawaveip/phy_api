@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) Alphawave IP Inc. All rights reserved.
- */
  
 
  
@@ -101,12 +97,12 @@ int pmd_get_lane(mss_access_t *mss, uint32_t *lane){
 
 int pmd_write_addr(mss_access_t *mss, uint32_t addr, uint32_t value){
     uint32_t final_addr;
-    if (addr < LANE0_OFFSET ||  addr > LANE_BROADCAST) {
+    if (addr < LANE0_OFFSET ||  addr >= LANE_BROADCAST) {
         final_addr = addr + mss->phy_offset;
     } else {
         final_addr = addr + mss->lane_offset + mss->phy_offset;
     }
-    printf("[pmd_write_addr]: Writing addr: 0x%08X, value: %d\n", final_addr, value);
+    printf("[pmd_write_addr]: Writing addr: 0x%08X, value: %d\n", final_addr, value); 
     write_csr(final_addr, value);
 
 
@@ -120,10 +116,8 @@ int pmd_read_addr(mss_access_t *mss, uint32_t addr, uint32_t *rdval){
     } else {
         final_addr = addr + mss->lane_offset + mss->phy_offset;
     }
-    if (final_addr >= LANE_BROADCAST) {
-        printf("[pmd_read_addr]: Cannot read register while mss.lane_offset has lane broadcast set.\n");
-        return 1;
-    }
+
+
     printf("[pmd_read_addr]: Reading addr: 0x%08X\n", final_addr);
     read_csr(final_addr, rdval);
     return 0;
