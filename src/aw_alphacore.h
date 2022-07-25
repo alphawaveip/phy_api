@@ -546,13 +546,7 @@ int aw_pmd_anlt_link_training_start_get (mss_access_t *mss, uint32_t * start);
  
 int aw_pmd_anlt_link_training_status_get (mss_access_t *mss, uint32_t * lt_running, uint32_t * lt_done, uint32_t * lt_training_failure, uint32_t * lt_rx_ready);
 
-#if defined (NOT_FOR_OSS)
- 
-int aw_pmd_ctrl_map_en_set(mss_access_t *mss, uint32_t anlt_ctrl_map_en);
-#endif  
 
-
- 
 int aw_pmd_refclk_termination_set(mss_access_t *mss, aw_refclk_term_mode_t lsrefbuf_term_mode);
 
  
@@ -1023,57 +1017,6 @@ int aw_pmd_snr_mon_enable_set(mss_access_t *mss, uint32_t nrz_mode, uint32_t mon
 
  
 int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if defined(AWCFG_OPTICAL_MODE_BUG4492)
-
-#endif
-
 
 
 
