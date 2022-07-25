@@ -4,8 +4,6 @@
  */
 
  
-
-
 #ifndef __aw_alphacore_atest_defines
 #define __aw_alphacore_atest_defines
 
@@ -322,6 +320,10 @@
 #define AW_ATEST_RX_ATEST_B_AFE_DIRECT_SYNTH_DCO_IOA_OSC_TERM  (0)
 
 
+
+ 
+#define AW_ATEST_ADC_VREF_MV   (700)
+#define AW_ATEST_ADC_VREF2_MV  (350)
 
  
 #define AW_ATEST_ADC_VREF2_CONSTANT (350.0)
