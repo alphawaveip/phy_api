@@ -2,9 +2,6 @@
 /*
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
- 
-
- 
 
 #include "aw_alphacore.h"
 #include "aw_pmd_rx_dsp_get.h"

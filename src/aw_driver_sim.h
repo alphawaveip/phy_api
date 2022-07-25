@@ -2,9 +2,6 @@
 /*
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
- 
-
- 
 
 #ifndef __aw_driver_sim
 #define __aw_driver_sim

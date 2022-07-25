@@ -2,9 +2,6 @@
 /*
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
- 
-
- 
 
 #ifndef __aw_pmd_rx_dsp_get
 #define __aw_pmd_rx_dsp_get
