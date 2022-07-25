@@ -3,7 +3,6 @@
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
 
- 
 #ifndef __aw_alphacore_atest_defines
 #define __aw_alphacore_atest_defines
 

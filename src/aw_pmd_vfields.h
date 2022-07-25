@@ -1,4 +1,7 @@
- 
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) Alphawave IP Inc. All rights reserved.
+ */ 
 
 #ifndef __aw_pmd_vfields
 #define __aw_pmd_vfields

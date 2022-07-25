@@ -1621,3 +1621,17 @@ int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable){
     return AW_ERR_CODE_NONE;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,7 @@
- 
-
- 
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) Alphawave IP Inc. All rights reserved.
+ */ 
 
 #ifndef __aw_alphacore_ip_defines
 #define __aw_alphacore_ip_defines

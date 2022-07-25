@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) Alphawave IP Inc. All rights reserved.
- */
- 
+ */ 
+
 #ifndef AW_ALPHACORE_H
 #define AW_ALPHACORE_H
 
@@ -1008,6 +1008,10 @@ int aw_pmd_link_training_without_an_config_set (mss_access_t *mss, uint32_t widt
 
  
 int aw_pmd_anlt_link_training_preset_check_set (mss_access_t *mss, uint32_t clause, uint32_t preset_check);
+
+
+
+
  
 int aw_pmd_snr_vld_hys_thresh_set_from_target_snr(mss_access_t *mss, uint32_t target_snr_low, uint32_t target_snr_high);
 
@@ -1019,3 +1023,58 @@ int aw_pmd_snr_mon_enable_set(mss_access_t *mss, uint32_t nrz_mode, uint32_t mon
 
  
 int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if defined(AWCFG_OPTICAL_MODE_BUG4492)
+
+#endif
+
+
+
+
+#endif  
