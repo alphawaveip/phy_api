@@ -7,22 +7,25 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "svdpi.h"
-#include "aw_alphacore_csr_defines.h"
-#include "aw_driver_sim.h"
+#include "aw_alphacore.h"
 
 
 
 #if defined(DO_NOT_PRINT)
 #define printf(...) do {} while (0)
 #endif
- 
+
+
+
+
 int serdes_init(mss_access_t *mss, uint32_t lane_offset, uint32_t phy_offset) {
     mss->lane_offset = lane_offset;
     mss->phy_offset = phy_offset;
     return 0;
 }
 
- 
+
+
 void write_csr(uint32_t addr, uint32_t wdata) {
     sv_write_csr(addr, wdata);
 }
@@ -62,10 +65,11 @@ int c_test_api_read(void) {
     return 0;
 }
 
- 
+
+
 
 int pmd_set_lane(mss_access_t *mss, uint32_t lane){
-     
+
     if (lane == 99) {
         mss->lane_offset = LANE_BROADCAST;
         return 0;
@@ -80,7 +84,7 @@ int pmd_set_lane(mss_access_t *mss, uint32_t lane){
 
 int pmd_get_lane(mss_access_t *mss, uint32_t *lane){
     uint32_t lane_temp;
-     
+
     if (mss->lane_offset == LANE_BROADCAST) {
         *lane = 99;
     } else {
@@ -103,7 +107,7 @@ int pmd_write_addr(mss_access_t *mss, uint32_t addr, uint32_t value){
     } else {
         final_addr = addr + mss->lane_offset + mss->phy_offset;
     }
-    printf("[pmd_write_addr]: Writing addr: 0x%08X, value: %d\n", final_addr, value); 
+    printf("[pmd_write_addr]: Writing addr: 0x%08X, value: %d\n", final_addr, value);
     write_csr(final_addr, value);
 
 
@@ -117,8 +121,10 @@ int pmd_read_addr(mss_access_t *mss, uint32_t addr, uint32_t *rdval){
     } else {
         final_addr = addr + mss->lane_offset + mss->phy_offset;
     }
-
-
+    if (final_addr >= LANE_BROADCAST && final_addr < SRAM_OFFSET) {
+        printf("[pmd_read_addr]: Cannot read register while mss.lane_offset has lane broadcast set.\n");
+        return 1;
+    }
     printf("[pmd_read_addr]: Reading addr: 0x%08X\n", final_addr);
     read_csr(final_addr, rdval);
     return 0;
@@ -171,7 +177,7 @@ int pmd_read_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_t
 
 int pmd_read_check_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_t fld_offset, aw_rd_opcode_t rd_opcode, uint32_t *rdval, uint32_t rdcheck_val1, uint32_t rdcheck_val2){
     uint32_t final_addr;
-    if (addr < LANE0_OFFSET) {  
+    if (addr < LANE0_OFFSET) {
         final_addr = addr + mss->phy_offset;
     }
     else {
@@ -238,7 +244,7 @@ int pmd_read_check_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, ui
         } else {
             printf("[pmd_read_check_field]: ERROR. Register check failed. Expected range = 0x%X -> 0x%X. Field value = 0x%X\n", rdcheck_val1, rdcheck_val2, fld_val);
             return -1;
-        }
+       	}
 
     } else {
         printf("[pmd_read_check_field]: ERROR. Invalid read opcode");
@@ -248,7 +254,7 @@ int pmd_read_check_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, ui
 }
 
 
- 
+
 int pmd_poll_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_t fld_offset, uint32_t poll_val, uint32_t timeout_us){
     uint32_t final_addr;
     if (addr < LANE0_OFFSET) {
@@ -270,7 +276,7 @@ int pmd_poll_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_t
         i++;
         USR_SLEEP(1);
         read_csr(final_addr, &rddata);
-         
+
         fld_val = ((rddata & fld_mask) >> fld_offset);
         printf("[pmd_poll_field]: Field value: 0x%X\n", fld_val);
         if (fld_val == poll_val) {
@@ -286,7 +292,7 @@ int pmd_poll_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_t
     }
 }
 
- 
+
 int pmd_ate_vec_comment(char comment[]) {
     printf("[pmd_ate_vec_comment]: %s\n", comment);
     return 0;
