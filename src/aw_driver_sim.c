@@ -3,10 +3,16 @@
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
 
+
+
+
+
+
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include "svdpi.h"
+#include <svdpi.h>
 #include "aw_alphacore.h"
 
 
@@ -26,6 +32,7 @@ int serdes_init(mss_access_t *mss, uint32_t lane_offset, uint32_t phy_offset) {
 
 
 
+
 void write_csr(uint32_t addr, uint32_t wdata) {
     sv_write_csr(addr, wdata);
 }
@@ -35,7 +42,6 @@ void read_csr(uint32_t addr, uint32_t *rdata) {
 }
 
 int delay_us(int x) {
-
     sv_delay_us(x);
 
     return 0;
@@ -52,16 +58,20 @@ void simple_print(const char *fmt, ...) {
 }
 
 int c_test_api_write(void) {
+    TRACE_ENTER("%s", "No args");
     uint32_t wval = 0x7FF;
     write_csr(0x00000000, wval);
     printf("[aw_driver_sim.c] Wrote value: %d\n", wval);
+    TRACE_EXIT("%s", "No args");
     return 0;
 }
 
 int c_test_api_read(void) {
+    TRACE_ENTER("%s", "No args");
     uint32_t rddata;
     read_csr(0x00000000, &rddata);
     printf("[aw_driver_sim.c] Read Value:  %d\n", rddata);
+    TRACE_EXIT("%s", "No args");
     return 0;
 }
 
@@ -69,7 +79,7 @@ int c_test_api_read(void) {
 
 
 int pmd_set_lane(mss_access_t *mss, uint32_t lane){
-
+    
     if (lane == 99) {
         mss->lane_offset = LANE_BROADCAST;
         return 0;
@@ -84,7 +94,7 @@ int pmd_set_lane(mss_access_t *mss, uint32_t lane){
 
 int pmd_get_lane(mss_access_t *mss, uint32_t *lane){
     uint32_t lane_temp;
-
+    
     if (mss->lane_offset == LANE_BROADCAST) {
         *lane = 99;
     } else {
@@ -107,7 +117,7 @@ int pmd_write_addr(mss_access_t *mss, uint32_t addr, uint32_t value){
     } else {
         final_addr = addr + mss->lane_offset + mss->phy_offset;
     }
-    printf("[pmd_write_addr]: Writing addr: 0x%08X, value: %d\n", final_addr, value);
+    printf("[pmd_write_addr]: Writing addr: 0x%08X, value: %d\n", final_addr, value); 
     write_csr(final_addr, value);
 
 
@@ -177,7 +187,7 @@ int pmd_read_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_t
 
 int pmd_read_check_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_t fld_offset, aw_rd_opcode_t rd_opcode, uint32_t *rdval, uint32_t rdcheck_val1, uint32_t rdcheck_val2){
     uint32_t final_addr;
-    if (addr < LANE0_OFFSET) {
+    if (addr < LANE0_OFFSET) { 
         final_addr = addr + mss->phy_offset;
     }
     else {
@@ -276,7 +286,7 @@ int pmd_poll_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_t
         i++;
         USR_SLEEP(1);
         read_csr(final_addr, &rddata);
-
+        
         fld_val = ((rddata & fld_mask) >> fld_offset);
         printf("[pmd_poll_field]: Field value: 0x%X\n", fld_val);
         if (fld_val == poll_val) {

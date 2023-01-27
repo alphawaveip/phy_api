@@ -3,6 +3,12 @@
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
 
+
+
+
+
+
+
 #ifndef AW_ALPHACORE_H
 #define AW_ALPHACORE_H
 
@@ -33,14 +39,14 @@
 
 
 typedef enum aw_err_code_e {
-    AW_ERR_CODE_NONE = 0,
-    AW_ERR_CODE_POLL_TIMEOUT = 1,
-    AW_ERR_CODE_INVALID_ARG_VALUE = 2,
-    AW_ERR_CODE_WRITE_FAILURE = 3,
-    AW_ERR_CODE_READ_FAILURE = 4,
-    AW_ERR_CODE_BAD_STATE = 5,
-    AW_ERR_CODE_FUNC_FAILURE = 6,
-    AW_ERR_CODE_CHECK_FAILURE = 7
+    AW_ERR_CODE_NONE = 0,              
+    AW_ERR_CODE_POLL_TIMEOUT = 1,      
+    AW_ERR_CODE_INVALID_ARG_VALUE = 2, 
+    AW_ERR_CODE_WRITE_FAILURE = 3,     
+    AW_ERR_CODE_READ_FAILURE = 4,      
+    AW_ERR_CODE_BAD_STATE = 5,         
+    AW_ERR_CODE_FUNC_FAILURE = 6,      
+    AW_ERR_CODE_CHECK_FAILURE = 7      
 } aw_err_code_t;
 #endif
 
@@ -53,49 +59,49 @@ typedef enum vref_vals_e {
 
 
 
-typedef struct aw_dwell_params_s {
-    uint32_t aw_measure_time;
-    uint64_t rx_data_rate;
+typedef struct aw_dwell_params_s { 
+    uint32_t aw_measure_time;  
+    uint64_t rx_data_rate;     
 } aw_dwell_params_t;
 
 
 typedef struct digref_struct {
-
+    
 
     double lsref_freq_mhz;
-
+    
 
     int digref_data_sel;
     int digref_clock_sel;
-
+    
 
     double tx_rate;
     double rx_rate;
-
+    
 
     uint32_t tx_width;
     uint32_t rx_width;
-
+    
 
     int num_adc;
-
+   
 
     int pam_en;
-
+   
 
     double bwidth_hz;
 
-
+    
 
     double rx_vco_freq_ghz;
     double tx_vco_freq_ghz;
 
-
+    
 
     uint32_t scaler_en;
 
 
-
+    
 
     uint32_t oversampling_mode;
 
@@ -112,104 +118,104 @@ typedef struct aw_an_newdef_s {
 
 
 typedef struct tx_hbridge_s {
-    uint32_t msb;
-    uint32_t lsb;
-    uint32_t bias_adj;
-    uint32_t rlm_ovr;
-    uint8_t bias_adj_en;
-    uint8_t rlm_ovr_en;
+    uint32_t msb; 
+    uint32_t lsb; 
+    uint32_t bias_adj; 
+    uint32_t rlm_ovr; 
+    uint8_t bias_adj_en; 
+    uint8_t rlm_ovr_en; 
 } tx_hbridge_t;
 
 
 
 typedef struct aw_an_spec_s {
-    uint32_t an_def_spec_width[28];
-    uint32_t an_def_spec_rate[28];
+    uint32_t an_def_spec_width[28];    
+    uint32_t an_def_spec_rate[28];     
 
-    uint32_t an_def_an_rate;
+    uint32_t an_def_an_rate;        
 
-    aw_an_newdef_t newdef1;
-    aw_an_newdef_t newdef2;
-    aw_an_newdef_t newdef3;
+    aw_an_newdef_t newdef1;         
+    aw_an_newdef_t newdef2;         
+    aw_an_newdef_t newdef3;         
 } aw_an_spec_t;
 
 typedef struct aw_lt_status_s {
-    uint32_t lt_running;
-    uint32_t lt_done;
-    uint32_t lt_failure;
-    uint32_t lt_rx_ready;
+    uint32_t lt_running; 
+    uint32_t lt_done; 
+    uint32_t lt_failure; 
+    uint32_t lt_rx_ready; 
 } aw_lt_status_t;
 
 typedef enum aw_refclk_term_mode_e {
-    AW_RC_HI_Z = 0,
-    AW_RC_R50_SE = 1,
-    AW_RC_R100_DF = 2,
-
+    AW_RC_HI_Z = 0, 
+    AW_RC_R50_SE = 1, 
+    AW_RC_R100_DF = 2, 
+    
 } aw_refclk_term_mode_t;
 
 typedef enum aw_acc_term_mode_e {
     AW_ACC_HI_Z = 0,
-    AW_ACC_TERM_VSS_AC = 1,
-    AW_ACC_TERM_FL_AC = 2,
-
-
-    AW_ACC_TERM_VSS_DC = 5,
-    AW_ACC_TERM_FL_DC = 6,
-
+    AW_ACC_TERM_VSS_AC = 1, 
+    AW_ACC_TERM_FL_AC = 2, 
+    
+    
+    AW_ACC_TERM_VSS_DC = 5, 
+    AW_ACC_TERM_FL_DC = 6, 
+    
 } aw_acc_term_mode_t;
 
 typedef enum aw_force_sigdet_mode_e {
-
+    
 
     AW_SIGDET_FORCE0 = 0,
 
-
+    
 
     AW_SIGDET_FORCE1 = 1,
 
-
+    
 
     AW_SIGDET_NORM = 2,
 } aw_force_sigdet_mode_t;
 
 
 typedef enum aw_txfir_cfg_taps_e {
-    AW_CM3 = 0,
-    AW_CM2 = 1,
-    AW_CM1 = 2,
-    AW_C0  = 3,
-    AW_C1  = 4,
+    AW_CM3 = 0, 
+    AW_CM2 = 1, 
+    AW_CM1 = 2, 
+    AW_C0  = 3, 
+    AW_C1  = 4, 
     AW_TXFIR_MAX_TAPS = 5
 } aw_txfir_cfg_taps_t;
 
 
 
 typedef struct aw_txfir_config_s {
-    uint32_t CM3;
-    uint32_t CM2;
-    uint32_t CM1;
-    uint32_t C0;
-    uint32_t C1;
+    uint32_t CM3; 
+    uint32_t CM2; 
+    uint32_t CM1; 
+    uint32_t C0;  
+    uint32_t C1;  
     uint32_t C2;
     uint32_t C3;
-    uint32_t main_or_max;
+    uint32_t main_or_max; 
 } aw_txfir_config_t;
 
 typedef struct aw_analog_loopback_txfir_config_s {
-    uint32_t nes_post1;
-    uint32_t nes_c0;
+    uint32_t nes_post1; 
+    uint32_t nes_c0;    
 } aw_analog_loopback_txfir_config_t;
 
 
 
 typedef enum aw_state_rate_e {
-  AW_NRZ_1p25_2p5 = 0,
-  AW_NRZ_10p3125 = 1,
-  AW_NRZ_25p78125 = 2,
-  AW_NRZ_26p5625 = 3,
-  AW_PAM4_53p125 = 4,
-  AW_NRZ_53p125 = 5,
-  AW_PAM4_106p25 = 6,
+  AW_NRZ_1p25_2p5 = 0, 
+  AW_NRZ_10p3125 = 1, 
+  AW_NRZ_25p78125 = 2, 
+  AW_NRZ_26p5625 = 3, 
+  AW_PAM4_53p125 = 4, 
+  AW_NRZ_53p125 = 5, 
+  AW_PAM4_106p25 = 6, 
   AW_MAX_RATES = 7,
 } aw_state_rate_t;
 
@@ -233,9 +239,9 @@ typedef enum aw_training_mode_e {
 
 
 typedef enum aw_pll_pstatus_e {
-    AW_PWR_DOWN = 0,
-    AW_PWR_UP = 1,
-    AW_ST_CHNG = 2
+    AW_PWR_DOWN = 0, 
+    AW_PWR_UP = 1, 
+    AW_ST_CHNG = 2 
 } aw_pll_pstatus_t;
 
 
@@ -244,19 +250,19 @@ typedef uint32_t aw_ffe_t[AW_FFE_NUM_TAPS];
 
 
 typedef struct aw_thresholds_s {
-
+    
 
     uint32_t eh;
-
+    
 
     uint32_t ez;
-
+    
 
     uint32_t el;
-
+    
 
     uint32_t thres_low;
-
+    
 
     uint32_t thres_hi;
 } aw_thresholds_t;
@@ -264,16 +270,16 @@ typedef struct aw_thresholds_s {
 
 
 typedef struct aw_slicers_s {
-
+    
 
     uint32_t eh3;
-
+    
 
     uint32_t eh1;
-
+    
 
     uint32_t el1;
-
+    
 
     uint32_t el3;
 } aw_slicers_t;
@@ -281,50 +287,51 @@ typedef struct aw_slicers_s {
 
 
 typedef struct aw_dcdiq_data_s {
-
+    
 
     uint32_t d0;
-
+    
 
     uint32_t d90;
-
+    
 
     uint32_t iq;
 } aw_dcdiq_data_t;
 
 typedef struct vga_opt_s {
-
+    
 
     uint32_t en;
-
+    
 
     uint32_t vga_cap;
-
+    
 
     uint32_t use_custom_takeover_ratio;
-
+    
 
     uint32_t custom_takeover_ratio;
-
+    
 
     uint32_t custom_nyq_mask;
 
 } vga_opt_t;
 
-typedef struct aw_afe_data_s {
 
+typedef struct aw_afe_data_s {
+    
 
     uint32_t ctle_rate;
-
+    
 
     uint32_t ctle_boost;
-
+    
 
     uint32_t vga_coarse;
-
+    
 
     uint32_t vga_fine;
-
+    
 
     uint32_t vga_offset;
 } aw_afe_data_t;
@@ -419,22 +426,22 @@ typedef enum aw_bist_pattern_e {
     AW_FULL_RATE_CLOCK = 12,
     AW_HALF_RATE_CLOCK = 13,
     AW_QUARTER_RATE_CLOCK = 14,
-    AW_PATT_32_1S_32_0S = 15,
-    AW_BIST_PATTERN_MAX
+    AW_PATT_32_1S_32_0S = 15, 
+    AW_BIST_PATTERN_MAX = 16 
 } aw_bist_pattern_t;
 
 typedef enum aw_bist_mode_e {
-    AW_TIMER = 0,
-    AW_DWELL = 1,
+    AW_TIMER = 0, 
+    AW_DWELL = 1, 
 } aw_bist_mode_t;
 
 typedef enum aw_eq_type_e {
-    AW_EQ_FULL_DIR = 0,
-    AW_EQ_EVAL_DIR = 1,
-    AW_EQ_INIT_EVAL = 2,
-    AW_EQ_CLEAR_EVAL = 3,
-    AW_EQ_FULL_FOM = 4,
-    AW_EQ_EVAL_FOM = 5
+    AW_EQ_FULL_DIR = 0, 
+    AW_EQ_EVAL_DIR = 1, 
+    AW_EQ_INIT_EVAL = 2, 
+    AW_EQ_CLEAR_EVAL = 3, 
+    AW_EQ_FULL_FOM = 4, 
+    AW_EQ_EVAL_FOM = 5 
 } aw_eq_type_t;
 
 
@@ -455,12 +462,12 @@ typedef enum aw_cmn_pstate_e {
 } aw_cmn_pstate_t;
 
 typedef enum aw_rx_roaming_mode_e {
-    AW_NO_ROAMING = 0,
-    AW_BANK1_ROAMING = 1,
-    AW_BANK2_ROAMING = 2,
-    AW_BANK1_BANK2_ROAMING = 3,
-    AW_RESET_DEFAULT_ROAMING_MODE = 4,
-    AW_MANUAL_WINDOW_SELECT = 5
+    AW_NO_ROAMING = 0,  
+    AW_BANK1_ROAMING = 1, 
+    AW_BANK2_ROAMING = 2, 
+    AW_BANK1_BANK2_ROAMING = 3, 
+    AW_RESET_DEFAULT_ROAMING_MODE = 4, 
+    AW_MANUAL_WINDOW_SELECT = 5 
 } aw_rx_roaming_mode_t;
 
 typedef enum aw_rx_ffe_tap_count_e {
@@ -479,8 +486,8 @@ typedef enum aw_rx_ffe_tap_count_e {
 
 
 
-
 uint32_t aw_width_decoder (uint32_t width_encoded);
+
 
 
 
@@ -491,7 +498,16 @@ int aw_pmd_anlt_logical_lane_num_set (mss_access_t *mss, uint32_t logical_lane, 
 
 
 
+int aw_pmd_anlt_auto_neg_link_status_ovr_enable(mss_access_t *mss, uint32_t en);
+
+
+
 int aw_pmd_anlt_auto_neg_adv_ability_set (mss_access_t *mss, uint32_t *adv_ability, uint32_t *fec_ability, uint32_t nonce);
+
+
+
+
+int aw_pmd_anlt_ms_per_ck_set(mss_access_t *mss, uint32_t ms_per_ck);
 
 
 
@@ -528,12 +544,25 @@ int aw_pmd_anlt_link_training_en_set (mss_access_t *mss, uint32_t en);
 
 
 
+int aw_pmd_link_training_without_an_config_set (mss_access_t *mss, uint32_t width, uint32_t clause);
+
+
+
+int aw_pmd_anlt_link_training_preset_check_set (mss_access_t *mss, uint32_t clause, uint32_t preset_check);
+
+
+
 int aw_pmd_anlt_link_training_reset (mss_access_t *mss);
 
 
 
 int aw_pmd_anlt_link_training_config_set (mss_access_t *mss, uint32_t width, uint32_t clause, uint32_t mod);
 
+
+
+
+
+int aw_pmd_anlt_link_training_prbs_seed_set (mss_access_t *mss, uint32_t clause, uint32_t logical_lane);
 
 
 
@@ -547,10 +576,6 @@ int aw_pmd_anlt_link_training_min_max_set (mss_access_t *mss, uint32_t pre1_max,
 
 
 
-int aw_pmd_anlt_link_training_prbs_seed_set (mss_access_t *mss, uint32_t clause, uint32_t logical_lane);
-
-
-
 int aw_pmd_anlt_link_training_start_set (mss_access_t *mss, uint32_t start);
 
 
@@ -561,6 +586,9 @@ int aw_pmd_anlt_link_training_status_get (mss_access_t *mss, uint32_t * lt_runni
 
 
 int aw_pmd_anlt_link_training_timeout_enable_set (mss_access_t *mss, uint32_t enable);
+
+
+
 
 
 
@@ -595,6 +623,7 @@ int aw_pmd_force_signal_detect_config_set(mss_access_t *mss, aw_force_sigdet_mod
 
 
 int aw_pmd_txfir_config_set(mss_access_t *mss, aw_txfir_config_t *txfir_cfg, uint32_t fir_ovr_enable);
+
 
 
 
@@ -661,6 +690,7 @@ int aw_pmd_rx_polarity_set(mss_access_t *mss, uint32_t rx_pol_flip);
 
 
 int aw_pmd_rx_dfe_adapt_set(mss_access_t *mss, uint32_t dfe_adapt_enable);
+
 
 
 
@@ -975,15 +1005,6 @@ int aw_pmd_rx_check_bist(mss_access_t *mss, aw_bist_mode_t bist_mode, uint32_t t
 
 
 
-int aw_pmd_rx_burst_err_config_set(mss_access_t *mss, uint32_t burst_err_threshold);
-
-
-
-int aw_pmd_rx_burst_err_get(mss_access_t *mss, uint32_t* burst_errs);
-
-
-
-
 
 
 
@@ -1081,23 +1102,6 @@ int aw_pmd_nep_loopback_set(mss_access_t *mss, uint32_t nep_loopback_enable);
 
 
 
-int aw_pmd_anlt_ms_per_ck_set(mss_access_t *mss, uint32_t ms_per_ck);
-
-
-
-
-
-int aw_pmd_anlt_auto_neg_link_status_ovr_enable(mss_access_t *mss, uint32_t en);
-
-
-
-int aw_pmd_link_training_without_an_config_set (mss_access_t *mss, uint32_t width, uint32_t clause);
-
-
-
-int aw_pmd_anlt_link_training_preset_check_set (mss_access_t *mss, uint32_t clause, uint32_t preset_check);
-
-
 
 
 
@@ -1150,4 +1154,5 @@ int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable);
 
 
 
-#endif
+
+#endif 
