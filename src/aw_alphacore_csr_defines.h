@@ -3,6 +3,7 @@
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
 
+
 #ifndef __aw_alphacore_csr_defines
 #define __aw_alphacore_csr_defines
 
@@ -10,8 +11,8 @@
 #ifndef __aw_csr_access_type
 #define __aw_csr_access_type
 typedef enum aw_csr_access_e {
-    AW_CSR_READ_WRITE = 0,
-    AW_CSR_READ_ONLY = 1,
+    AW_CSR_READ_WRITE = 0, 
+    AW_CSR_READ_ONLY = 1, 
 } aw_csr_access_t;
 #endif
 
@@ -19495,11 +19496,19 @@ typedef enum aw_csr_access_e {
 
 
 
+
+
+
+
 #define RX_TIADC_AFE_REG1_B1_BIAS_ADJ_NT_OFFSET 0x00000007
 #define RX_TIADC_AFE_REG1_B1_BIAS_ADJ_NT_BITWIDTH 0x00000003
 #define RX_TIADC_AFE_REG1_B1_BIAS_ADJ_NT_MASK 0x00000380
 #define RX_TIADC_AFE_REG1_B1_BIAS_ADJ_NT_ACCESS AW_CSR_READ_WRITE
 #define RX_TIADC_AFE_REG1_B1_BIAS_ADJ_NT_RESET_VALUE 0x00000001
+
+
+
+
 
 
 
@@ -35485,6 +35494,7 @@ typedef enum aw_csr_access_e {
 
 
 
+
 #define ETH_LT_NO_AN_CTRL_LT_CTRL_OFFSET 0x00000004
 #define ETH_LT_NO_AN_CTRL_LT_CTRL_BITWIDTH 0x00000003
 #define ETH_LT_NO_AN_CTRL_LT_CTRL_MASK 0x00000070
@@ -38839,4 +38849,4 @@ typedef enum aw_csr_access_e {
 #define LOOPBACK_CNTRL_ENA_NT_ACCESS AW_CSR_READ_WRITE
 #define LOOPBACK_CNTRL_ENA_NT_RESET_VALUE 0x00000000
 
-#endif
+#endif 

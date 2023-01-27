@@ -3,12 +3,18 @@
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
 
+
+
+
+
+
+
 #include "aw_alphacore.h"
 #include "aw_pmd_rx_dsp_get.h"
 
 
 
-int aw_pmd_rx_dsp_get(mss_access_t *mss, uint32_t branch, aw_dsp_param_t *dsp_info){
+int aw_pmd_rx_dsp_get(mss_access_t *mss, uint32_t branch, aw_dsp_param_t *dsp_info, uint32_t print_en){
     uint32_t target_rx_ccg;
     uint32_t slicer_rx_ccg;
     uint32_t ffe_rx_ccg;
@@ -19,7 +25,7 @@ int aw_pmd_rx_dsp_get(mss_access_t *mss, uint32_t branch, aw_dsp_param_t *dsp_in
     uint32_t dfe_adapt_ena_a;
     uint32_t offset_adapt_ena_a;
 
-
+    
     CHECK(pmd_read_field(mss, RX_CCG_ADDR, RX_CCG_TARGET_ADAPT_ENA_A_MASK, RX_CCG_TARGET_ADAPT_ENA_A_OFFSET, &target_rx_ccg));
     CHECK(pmd_read_field(mss, RX_CCG_ADDR, RX_CCG_SLICER_ADAPT_ENA_A_MASK, RX_CCG_SLICER_ADAPT_ENA_A_OFFSET, &slicer_rx_ccg));
     CHECK(pmd_read_field(mss, RX_CCG_ADDR, RX_CCG_FFE_ADAPT_ENA_A_MASK, RX_CCG_FFE_ADAPT_ENA_A_OFFSET, &ffe_rx_ccg));
@@ -30,7 +36,7 @@ int aw_pmd_rx_dsp_get(mss_access_t *mss, uint32_t branch, aw_dsp_param_t *dsp_in
     CHECK(pmd_read_field(mss, RX_DFE_ADAPT_REG6_ADDR, RX_DFE_ADAPT_REG6_ADAPT_ENA_A_MASK, RX_DFE_ADAPT_REG6_ADAPT_ENA_A_OFFSET, &dfe_adapt_ena_a));
     CHECK(pmd_read_field(mss, RX_DATABLOCK_OFFSET_REG6_ADDR, RX_DATABLOCK_OFFSET_REG6_ADAPT_ENA_A_MASK, RX_DATABLOCK_OFFSET_REG6_ADAPT_ENA_A_OFFSET, &offset_adapt_ena_a));
 
-
+    
     CHECK(pmd_write_field(mss, RX_CCG_ADDR, RX_CCG_TARGET_ADAPT_ENA_A_MASK, RX_CCG_TARGET_ADAPT_ENA_A_OFFSET, 1));
     CHECK(pmd_write_field(mss, RX_CCG_ADDR, RX_CCG_SLICER_ADAPT_ENA_A_MASK, RX_CCG_SLICER_ADAPT_ENA_A_OFFSET, 1));
     CHECK(pmd_write_field(mss, RX_CCG_ADDR, RX_CCG_FFE_ADAPT_ENA_A_MASK, RX_CCG_FFE_ADAPT_ENA_A_OFFSET, 1));
@@ -303,7 +309,7 @@ int aw_pmd_rx_dsp_get(mss_access_t *mss, uint32_t branch, aw_dsp_param_t *dsp_in
     CHECK(pmd_read_field(mss, RX_SLICER_TARGET_RDREG13_ADDR, RX_SLICER_TARGET_RDREG13_EH1_NT_MASK, RX_SLICER_TARGET_RDREG13_EH1_NT_OFFSET, &(dsp_info->slicers.eh1) ));
     CHECK(pmd_read_field(mss, RX_SLICER_TARGET_RDREG14_ADDR, RX_SLICER_TARGET_RDREG14_EH3_NT_MASK, RX_SLICER_TARGET_RDREG14_EH3_NT_OFFSET, &(dsp_info->slicers.eh3) ));
 
-
+    
     CHECK(pmd_write_field(mss, RX_CCG_ADDR, RX_CCG_TARGET_ADAPT_ENA_A_MASK, RX_CCG_TARGET_ADAPT_ENA_A_OFFSET, target_rx_ccg));
     CHECK(pmd_write_field(mss, RX_CCG_ADDR, RX_CCG_SLICER_ADAPT_ENA_A_MASK, RX_CCG_SLICER_ADAPT_ENA_A_OFFSET, slicer_rx_ccg));
     CHECK(pmd_write_field(mss, RX_CCG_ADDR, RX_CCG_FFE_ADAPT_ENA_A_MASK, RX_CCG_FFE_ADAPT_ENA_A_OFFSET, ffe_rx_ccg));
@@ -315,8 +321,11 @@ int aw_pmd_rx_dsp_get(mss_access_t *mss, uint32_t branch, aw_dsp_param_t *dsp_in
     CHECK(pmd_write_field(mss, RX_DATABLOCK_OFFSET_REG6_ADDR, RX_DATABLOCK_OFFSET_REG6_ADAPT_ENA_A_MASK, RX_DATABLOCK_OFFSET_REG6_ADAPT_ENA_A_OFFSET, offset_adapt_ena_a));
 
 
+    
+    if (print_en == 1) {
+        USR_PRINTF("Branch |   EL3   |   EL1   |   EH1   |   EH3   \n");
+        USR_PRINTF("  %d  |   %d   |   %d   |   %d   |   %d   \n", branch, dsp_info->slicers.el3, dsp_info->slicers.el1, dsp_info->slicers.eh1, dsp_info->slicers.eh3);
+    }
 
-    USR_PRINTF("Branch |   EL3   |   EL1   |   EH1   |   EH3   \n");
-    USR_PRINTF("  %d  |   %d   |   %d   |   %d   |   %d   \n", branch, dsp_info->slicers.el3, dsp_info->slicers.el1, dsp_info->slicers.eh1, dsp_info->slicers.eh3);
     return AW_ERR_CODE_NONE;
 }

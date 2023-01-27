@@ -3,23 +3,27 @@
  * Copyright (c) Alphawave IP Inc. All rights reserved.
  */
 
+
+
+
+
+
+
 #ifndef __aw_driver_sim
 #define __aw_driver_sim
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include "svdpi.h"
+#include <svdpi.h>
 #include "aw_alphacore_csr_defines.h"
 
+#define TRACE_ENTER(cformat, ...) do{} while(0)
+#define TRACE_EXIT(cformat, ...) do{} while(0)
 
 
-extern void sv_write_csr(uint32_t addr, uint32_t wdata);
-extern void sv_read_csr(uint32_t addr, uint32_t *rdata);
-extern void sv_delay_us(int delay_us);
-extern void sv_print(char *str);
 
-#define LANE0_OFFSET 0x02000000
+#define LANE0_OFFSET 0x02000000 
 #define SRAM_OFFSET 0x80000000
 
 #define USR_SLEEP(x)  delay_us(x);
@@ -31,30 +35,30 @@ extern void sv_print(char *str);
 
 
 typedef struct mss_access_s {
+    
 
+    uint32_t phy_offset; 
+    uint32_t lane_offset; 
 
-    uint32_t phy_offset;
-    uint32_t lane_offset;
-
-
-
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 } mss_access_t;
 
 typedef enum aw_rd_opcode_e {
-    RD_EQ    = 0,
-    RD_GT    = 1,
-    RD_GTE   = 2,
-    RD_LT    = 3,
-    RD_LTE   = 4,
-    RD_RANGE = 5
+    RD_EQ    = 0, 
+    RD_GT    = 1, 
+    RD_GTE   = 2, 
+    RD_LT    = 3, 
+    RD_LTE   = 4, 
+    RD_RANGE = 5  
 } aw_rd_opcode_t;
 
 int serdes_init(mss_access_t *mss, uint32_t lane_offset, uint32_t phy_offset);
@@ -75,4 +79,4 @@ int pmd_ate_vec_comment(char comment[]);
 int pmd_get_lane(mss_access_t *mss, uint32_t *lane);
 
 
-#endif
+#endif 
