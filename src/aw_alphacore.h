@@ -137,6 +137,8 @@ typedef struct aw_an_spec_s {
     aw_an_newdef_t newdef1;         
     aw_an_newdef_t newdef2;         
     aw_an_newdef_t newdef3;         
+    aw_an_newdef_t newdef4;         
+
 } aw_an_spec_t;
 
 typedef struct aw_lt_status_s {
@@ -249,6 +251,8 @@ typedef enum aw_pll_pstatus_e {
 typedef uint32_t aw_ffe_t[AW_FFE_NUM_TAPS];
 
 
+typedef int aw_ffe_signed_t[AW_FFE_NUM_TAPS];
+
 typedef struct aw_thresholds_s {
     
 
@@ -285,6 +289,26 @@ typedef struct aw_slicers_s {
 } aw_slicers_t;
 
 
+typedef struct aw_dsp_param_s {
+    
+    uint32_t dc_offset;
+    
+    uint32_t dfe;
+    aw_ffe_t ffe;
+    aw_ffe_signed_t s_ffe;
+    aw_ffe_t pre_ffe;
+    aw_ffe_signed_t s_pre_ffe;
+    aw_ffe_t pre_dfe_ffe;
+    aw_ffe_signed_t s_pre_dfe_ffe;
+    aw_ffe_t pre_ffe_ctle0;
+    aw_ffe_t pre_ffe_ctle1;
+    aw_ffe_t pre_ffe_ctle2;
+    aw_ffe_t pre_ffe_ctle3;
+    aw_ffe_t pre_ffe_ctle4;
+    aw_ffe_t pre_ffe_ctle5;
+    aw_thresholds_t thresholds;
+    aw_slicers_t slicers;
+} aw_dsp_param_t;
 
 typedef struct aw_dcdiq_data_s {
     
@@ -484,6 +508,76 @@ typedef enum aw_rx_ffe_tap_count_e {
 
 
 
+typedef struct aw_rx_sweep_demapper_nrz_nb_seq_s {
+
+    enum {
+
+        AW_RX_SWEEP_DEMAPPER_NRZ_STAGE0,
+
+        AW_RX_SWEEP_DEMAPPER_NRZ_STAGE1
+
+    } state;
+
+} aw_rx_sweep_demapper_nrz_nb_seq_t;
+
+typedef struct aw_rx_sweep_demapper_pam4_nb_seq_s {
+
+    enum {
+
+        AW_RX_SWEEP_DEMAPPER_PAM4_STAGE0,
+
+        AW_RX_SWEEP_DEMAPPER_PAM4_STAGE1
+
+    } state;
+
+} aw_rx_sweep_demapper_pam4_nb_seq_t;
+
+typedef struct aw_rx_equalize_nb_seq_s {
+
+    enum {
+
+        AW_RX_EQUALIZE_STAGE0,
+
+        AW_RX_EQUALIZE_STAGE1,
+
+        AW_RX_EQUALIZE_STAGE2,
+
+        AW_RX_EQUALIZE_STAGE3
+
+    } state;
+
+} aw_rx_equalize_nb_seq_t;
+
+typedef struct aw_rx_check_bist_nb_seq_s {
+
+    enum {
+
+        AW_RX_CHECK_BIST_STAGE0,
+
+        AW_RX_CHECK_BIST_STAGE1,
+
+        AW_RX_CHECK_BIST_STAGE2,
+
+        AW_RX_CHECK_BIST_STAGE3
+
+    } state;
+
+} aw_rx_check_bist_nb_seq_t;
+
+typedef struct aw_pause_background_nb_seq_s {
+
+    enum {
+
+        AW_PAUSE_BACKGROUND_STAGE0,
+
+        AW_PAUSE_BACKGROUND_STAGE1
+
+    } state;
+
+} aw_pause_background_nb_seq_t;
+
+
+
 
 
 uint32_t aw_width_decoder (uint32_t width_encoded);
@@ -530,6 +624,7 @@ int aw_pmd_anlt_auto_neg_status_complete_get (mss_access_t *mss, uint32_t * an_c
 
 
 int aw_pmd_anlt_auto_neg_next_page_set(mss_access_t *mss, uint64_t an_tx_np);
+
 
 
 
@@ -594,6 +689,8 @@ int aw_pmd_anlt_link_training_timeout_enable_set (mss_access_t *mss, uint32_t en
 
 
 
+
+
 int aw_pmd_refclk_termination_set(mss_access_t *mss, aw_refclk_term_mode_t lsrefbuf_term_mode);
 
 
@@ -629,6 +726,11 @@ int aw_pmd_txfir_config_set(mss_access_t *mss, aw_txfir_config_t *txfir_cfg, uin
 
 
 
+int aw_pmd_txfir_config_get(mss_access_t *mss, aw_txfir_config_t *txfir_cfg);
+
+
+
+
 int aw_pmd_tx_pam4_precoder_override_set(mss_access_t *mss, uint32_t en);
 
 
@@ -640,6 +742,7 @@ int aw_pmd_tx_pam4_precoder_enable_set(mss_access_t *mss, uint32_t gray_en, uint
 
 
 int aw_pmd_rx_pam4_precoder_override_set(mss_access_t *mss, uint32_t en);
+
 
 
 
@@ -696,6 +799,11 @@ int aw_pmd_rx_dfe_adapt_set(mss_access_t *mss, uint32_t dfe_adapt_enable);
 
 
 
+
+
+
+
+int aw_pmd_rx_background_adapt_enable_set(mss_access_t *mss, uint32_t rx_background_adapt);
 
 
 
@@ -766,6 +874,8 @@ int aw_pmd_tx_gen_err_inject_config_set(mss_access_t *mss, uint64_t err_pattern,
 
 
 int aw_pmd_tx_gen_err_inject_en_set(mss_access_t *mss, uint32_t enable);
+
+
 
 
 
@@ -1011,6 +1121,7 @@ int aw_pmd_rx_check_bist(mss_access_t *mss, aw_bist_mode_t bist_mode, uint32_t t
 
 
 
+
 int aw_pmd_eqeval_type_set(mss_access_t *mss, uint32_t eq_type);
 
 
@@ -1028,6 +1139,7 @@ int aw_pmd_eqeval_incdec_get(mss_access_t *mss, uint32_t * incdec);
 
 
 int aw_pmd_rx_equalize(mss_access_t *mss, aw_eq_type_t eq_type, uint32_t timeout_us );
+
 
 
 
@@ -1094,6 +1206,7 @@ int aw_pmd_nep_loopback_set(mss_access_t *mss, uint32_t nep_loopback_enable);
 
 
 
+int aw_pmd_rd_data_pipeline_stages_set(mss_access_t *mss, uint32_t stages);
 
 
 
@@ -1116,6 +1229,21 @@ int aw_pmd_nep_loopback_set(mss_access_t *mss, uint32_t nep_loopback_enable);
 
 
 
+
+
+
+
+int aw_pmd_rx_cdr_lock_get(mss_access_t *mss, uint32_t *rx_cdr_lock);
+
+
+
+
+
+
+
+
+
+int aw_pmd_enable_pam4_mode(mss_access_t *mss, int enable);
 
 
 
@@ -1151,6 +1279,9 @@ int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable);
 
 
 
+
+
+int aw_tc_sm_conv(uint32_t v, uint32_t i);
 
 
 
