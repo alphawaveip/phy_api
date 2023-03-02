@@ -25,8 +25,9 @@
 #define AW_TB_ADC_SAMPLES_PER_BLOCK              3
 #define AW_TBUS_NUM_SAMPLES                      20
 
-
 #define AW_POWERGATE_HIER_EN                         0
 
+
+#define AW_POWERGATE_HIER_EN                         0
 
 #endif 

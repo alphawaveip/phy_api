@@ -133,7 +133,6 @@ typedef struct aw_an_spec_s {
     uint32_t an_def_spec_rate[28];     
 
     uint32_t an_def_an_rate;        
-
     aw_an_newdef_t newdef1;         
     aw_an_newdef_t newdef2;         
     aw_an_newdef_t newdef3;         
@@ -579,7 +578,6 @@ typedef struct aw_pause_background_nb_seq_s {
 
 
 
-
 uint32_t aw_width_decoder (uint32_t width_encoded);
 
 
@@ -687,10 +685,6 @@ int aw_pmd_anlt_link_training_timeout_enable_set (mss_access_t *mss, uint32_t en
 
 
 
-
-
-
-
 int aw_pmd_refclk_termination_set(mss_access_t *mss, aw_refclk_term_mode_t lsrefbuf_term_mode);
 
 
@@ -726,8 +720,8 @@ int aw_pmd_txfir_config_set(mss_access_t *mss, aw_txfir_config_t *txfir_cfg, uin
 
 
 
-int aw_pmd_txfir_config_get(mss_access_t *mss, aw_txfir_config_t *txfir_cfg);
 
+int aw_pmd_txfir_config_get(mss_access_t *mss, aw_txfir_config_t *txfir_cfg);
 
 
 
@@ -804,6 +798,7 @@ int aw_pmd_rx_dfe_adapt_set(mss_access_t *mss, uint32_t dfe_adapt_enable);
 
 
 int aw_pmd_rx_background_adapt_enable_set(mss_access_t *mss, uint32_t rx_background_adapt);
+
 
 
 
@@ -1118,10 +1113,6 @@ int aw_pmd_rx_check_bist(mss_access_t *mss, aw_bist_mode_t bist_mode, uint32_t t
 
 
 
-
-
-
-
 int aw_pmd_eqeval_type_set(mss_access_t *mss, uint32_t eq_type);
 
 
@@ -1218,21 +1209,6 @@ int aw_pmd_rd_data_pipeline_stages_set(mss_access_t *mss, uint32_t stages);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 int aw_pmd_rx_cdr_lock_get(mss_access_t *mss, uint32_t *rx_cdr_lock);
 
 
@@ -1282,8 +1258,6 @@ int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable);
 
 
 int aw_tc_sm_conv(uint32_t v, uint32_t i);
-
-
 
 
 #endif 

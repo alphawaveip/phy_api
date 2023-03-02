@@ -35,7 +35,6 @@ int aw_tc_sm_conv(uint32_t v, uint32_t i) {
     return final_val;
 }
 
-
 uint32_t aw_width_decoder (uint32_t width_encoded) {
     TRACE_ENTER("width_encoded = %d", width_encoded);
     uint32_t width = 128;
@@ -103,8 +102,6 @@ int aw_pmd_anlt_auto_neg_adv_ability_set (mss_access_t *mss, uint32_t *adv_abili
     TRACE_ENTER("mss=0x%x, 0x%x, *adv_ability = %d, *fec_ability = %d, nonce = %d", mss->phy_offset, mss->lane_offset,  *adv_ability,  *fec_ability,  nonce);
     uint32_t ability_1_temp = 0;
     uint32_t ability_2_temp = 0;
-
-    
 
     for (int i = 0; i<=19; i++) {
         if (i <= 10 && adv_ability[i] == 1) {
@@ -199,10 +196,6 @@ int aw_pmd_anlt_auto_neg_next_page_set(mss_access_t *mss, uint64_t an_tx_np) {
     return AW_ERR_CODE_NONE;
 
 }
-
-
-
-
 
 int aw_pmd_anlt_auto_neg_next_page_oui_compare_set(mss_access_t *mss, uint32_t np_expected_oui){
     TRACE_ENTER("mss=0x%x, 0x%x, np_expected_oui = %d", mss->phy_offset, mss->lane_offset,  np_expected_oui);
@@ -405,13 +398,6 @@ int aw_pmd_anlt_link_training_timeout_enable_set (mss_access_t *mss, uint32_t en
     return AW_ERR_CODE_NONE;
 }
 
-
-
-
-
-
-
-
 int aw_pmd_refclk_termination_set(mss_access_t *mss, aw_refclk_term_mode_t lsrefbuf_term_mode){
     TRACE_ENTER("mss=0x%x, 0x%x", mss->phy_offset, mss->lane_offset);
     CHECK(pmd_write_field(mss, CMN_REFCLK_ADDR, CMN_REFCLK_LSREFBUF_TERM_MODE_NT_MASK, CMN_REFCLK_LSREFBUF_TERM_MODE_NT_OFFSET, lsrefbuf_term_mode ));
@@ -451,19 +437,6 @@ int aw_pmd_force_signal_detect_config_set(mss_access_t *mss, aw_force_sigdet_mod
             return AW_ERR_CODE_INVALID_ARG_VALUE;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -552,7 +525,6 @@ int aw_pmd_txfir_config_get(mss_access_t *mss, aw_txfir_config_t *txfir_cfg){
     TRACE_EXIT("mss=0x%x, 0x%x", mss->phy_offset, mss->lane_offset);
     return AW_ERR_CODE_NONE;
 }
-
 
 int aw_pmd_tx_pam4_precoder_override_set(mss_access_t *mss, uint32_t en){
     TRACE_ENTER("mss=0x%x, 0x%x, en = %d", mss->phy_offset, mss->lane_offset,  en);
@@ -837,19 +809,14 @@ int aw_pmd_rx_background_adapt_enable_set(mss_access_t *mss, uint32_t rx_backgro
 
 
 
+
+
 int aw_pmd_rxeq_prbs_set(mss_access_t *mss, uint32_t prbs_en) {
     TRACE_ENTER("mss=0x%x, 0x%x, prbs_en = %d", mss->phy_offset, mss->lane_offset,  prbs_en);
     CHECK(pmd_write_field(mss, RXEQ_PRBS_ADDR, RXEQ_PRBS_MASK, RXEQ_PRBS_OFFSET, prbs_en));
     TRACE_EXIT("mss=0x%x, 0x%x, prbs_en = %d", mss->phy_offset, mss->lane_offset,  prbs_en);
     return AW_ERR_CODE_NONE;
 }
-
-
-
-
-
-
-
 
 
 
@@ -1745,13 +1712,6 @@ int aw_pmd_rx_check_bist(mss_access_t *mss, aw_bist_mode_t bist_mode, uint32_t t
 }
 
 
-
-
-
-
-
-
-
 int aw_pmd_eqeval_type_set(mss_access_t *mss, uint32_t eq_type) {
     TRACE_ENTER("mss=0x%x, 0x%x, eq_type = %d", mss->phy_offset, mss->lane_offset,  eq_type);
     CHECK(pmd_write_field(mss, DIG_SOC_LANE_OVRD_REG2_ADDR, DIG_SOC_LANE_OVRD_REG2_ICTL_RX_LINKEVAL_TYPE_A_MASK, DIG_SOC_LANE_OVRD_REG2_ICTL_RX_LINKEVAL_TYPE_A_OFFSET, eq_type));
@@ -1852,12 +1812,6 @@ int aw_pmd_rx_cdr_lock_get(mss_access_t *mss, uint32_t *rx_cdr_lock) {
     TRACE_EXIT("mss=0x%x, 0x%x, *rx_cdr_lock = %d", mss->phy_offset, mss->lane_offset,  *rx_cdr_lock);
     return AW_ERR_CODE_NONE;
 }
-
-
-
-
-
-
 
 
 
