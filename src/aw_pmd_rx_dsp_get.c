@@ -73,6 +73,8 @@ int aw_pmd_rx_dsp_get(mss_access_t *mss, uint32_t branch, aw_dsp_param_t *dsp_in
     CHECK(pmd_read_field(mss, RX_FFE_ADAPT_COEF_RDREG4_ADDR, RX_FFE_ADAPT_COEF_RDREG4_TAP17_NT_MASK, RX_FFE_ADAPT_COEF_RDREG4_TAP17_NT_OFFSET,   &(dsp_info->ffe[17]) ));
 
 
+
+
     dsp_info->s_ffe[0] = aw_tc_sm_conv(dsp_info->ffe[0], RX_FFE_ADAPT_COEF_RDREG0_TAP0_NT_BITWIDTH);
     dsp_info->s_ffe[1] = aw_tc_sm_conv(dsp_info->ffe[1], RX_FFE_ADAPT_COEF_RDREG0_TAP1_NT_BITWIDTH);
     dsp_info->s_ffe[2] = aw_tc_sm_conv(dsp_info->ffe[2], RX_FFE_ADAPT_COEF_RDREG0_TAP2_NT_BITWIDTH);

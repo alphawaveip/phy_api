@@ -150,7 +150,6 @@ int pmd_write_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, uint32_
         final_addr = addr + mss->lane_offset + mss->phy_offset;
     }
 
-    printf("[pmd_write_field]: Writing addr: 0x%08X, value: %d\n", final_addr, wval);
     uint32_t reg_read;
     wval = wval << fld_offset;
     read_csr(final_addr, &reg_read);
@@ -201,6 +200,7 @@ int pmd_read_check_field(mss_access_t *mss, uint32_t addr, uint32_t fld_mask, ui
     printf("[pmd_read_check_field]: Reading addr: 0x%08X\n", final_addr);
     uint32_t rddata;
     read_csr(final_addr, &rddata);
+
     printf("[pmd_read_check_field]: Read value: 0x%08X\n", rddata);
     uint32_t fld_val = ((rddata & fld_mask) >> fld_offset);
     *rdval = fld_val;
