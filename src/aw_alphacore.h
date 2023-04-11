@@ -1188,5 +1188,6 @@ int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable);
 
 int aw_tc_sm_conv(uint32_t v, uint32_t i);
 
+int aw_pmd_anlt_auto_neg_result_get (mss_access_t *mss, uint8_t no_consortium, uint32_t * an_result);
 
 #endif 
