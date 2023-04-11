@@ -1915,3 +1915,68 @@ int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable){
     TRACE_EXIT("mss=0x%x, 0x%x, vld_enable = %d", mss->phy_offset, mss->lane_offset,  vld_enable);
     return AW_ERR_CODE_NONE;
 }
+
+int aw_pmd_anlt_auto_neg_result_get (mss_access_t *mss, uint8_t no_consortium, uint32_t * an_result){
+
+    uint32_t an_link_good;
+    CHECK(pmd_read_check_field(mss, ETH_ANLT_STATUS_ADDR, ETH_ANLT_STATUS_AN_LINK_GOOD_MASK, ETH_ANLT_STATUS_AN_LINK_GOOD_OFFSET, RD_EQ, &an_link_good,  1, 0 /*NULL*/));
+ 
+    if(no_consortium == 1) {
+
+        uint32_t an_spec_1;
+        uint32_t an_spec_2;
+        uint32_t an_spec_3;
+        uint32_t an_spec_4;
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_1_MASK, ETH_AN_RESULT_REG1_AN_SPEC_1_OFFSET, &an_spec_1));
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_2_MASK, ETH_AN_RESULT_REG1_AN_SPEC_2_OFFSET, &an_spec_2));
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_3_MASK, ETH_AN_RESULT_REG1_AN_SPEC_3_OFFSET, &an_spec_3));
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG2_ADDR, ETH_AN_RESULT_REG2_AN_SPEC_4_MASK, ETH_AN_RESULT_REG2_AN_SPEC_4_OFFSET, &an_spec_4));
+
+
+        uint32_t an_spec = an_spec_1;
+        an_spec = (an_spec_2 << 3)  | an_spec;
+        an_spec = (an_spec_3 << 5)  | an_spec;
+        an_spec = (an_spec_4 << 13) | an_spec;
+
+        // there should only be 1 bit that is 1, all other bits should be 0
+        int cntr = 0;
+        for (int i = 0 ; i < 32 ; i++){
+            int bit = (an_spec >> i) & 1;
+            if (bit == 1){
+                cntr++;
+            }
+        }
+        if (cntr != 1){
+            return AW_ERR_CODE_BAD_STATE;
+        }
+
+
+        *an_result = log(an_spec)/log(2);
+    } else if (no_consortium == 0) {
+
+        uint32_t an_econ_spec_1;
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG2_ADDR, ETH_AN_RESULT_REG2_AN_ECON_SPEC_MASK, ETH_AN_RESULT_REG2_AN_ECON_SPEC_OFFSET, &an_econ_spec_1));
+
+        uint32_t an_spec = an_econ_spec_1;
+
+        int cntr = 0;
+        for (int i = 0 ; i < 5 ; i++) {
+            int bit = (an_spec >> i) & 1;
+            if (bit == 1) {
+                cntr++;
+            }
+        }
+        if (cntr != 1) {
+            return AW_ERR_CODE_BAD_STATE;
+        }
+
+        *an_result = log(an_spec)/log(2);
+    } else {
+        USR_PRINTF("ERROR: Please set no_consortium field to either 0 or 1. Other values not accepted \n");
+        return AW_ERR_CODE_BAD_STATE;
+    }
+
+    return AW_ERR_CODE_NONE;
+}
+
+
