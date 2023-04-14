@@ -1979,3 +1979,18 @@ int aw_pmd_anlt_auto_neg_result_get (mss_access_t *mss, uint8_t no_consortium, u
     return AW_ERR_CODE_NONE;
 }
 
+int aw_pmd_anlt_auto_neg_next_page_set(mss_access_t *mss, uint64_t an_tx_np) {
+    uint32_t an_mr_np_tx_1 = (an_tx_np & 0xFFFF);
+    uint32_t an_mr_np_tx_2 = (an_tx_np >> 16) & 0xFFFF;
+    uint32_t an_mr_np_tx_3 = (an_tx_np >> 32) & 0xFFFF;
+
+    CHECK(pmd_write_field(mss,  ETH_AN_NP_REG1_ADDR, ETH_AN_NP_REG1_AN_MR_NP_TX_1_MASK, ETH_AN_NP_REG1_AN_MR_NP_TX_1_OFFSET, an_mr_np_tx_1));
+    CHECK(pmd_write_field(mss,  ETH_AN_NP_REG2_ADDR, ETH_AN_NP_REG2_AN_MR_NP_TX_2_MASK, ETH_AN_NP_REG2_AN_MR_NP_TX_2_OFFSET, an_mr_np_tx_2));
+    CHECK(pmd_write_field(mss,  ETH_AN_NP_REG3_ADDR, ETH_AN_NP_REG3_AN_MR_NP_TX_3_MASK, ETH_AN_NP_REG3_AN_MR_NP_TX_3_OFFSET, an_mr_np_tx_3));
+
+    //now that NP is loaded, trigger NP
+    CHECK(pmd_write_field(mss,  ETH_AN_NP_REG3_ADDR, ETH_AN_NP_REG3_AN_MR_NEXT_PAGE_LOADED_MASK, ETH_AN_NP_REG3_AN_MR_NEXT_PAGE_LOADED_OFFSET, 1));
+
+    return AW_ERR_CODE_NONE;
+
+}

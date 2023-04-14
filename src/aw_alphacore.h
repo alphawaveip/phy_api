@@ -1190,4 +1190,6 @@ int aw_tc_sm_conv(uint32_t v, uint32_t i);
 
 int aw_pmd_anlt_auto_neg_result_get (mss_access_t *mss, uint8_t no_consortium, uint32_t * an_result);
 
+int int aw_pmd_anlt_auto_neg_next_page_set(mss_access_t *mss, uint64_t an_tx_np);
+
 #endif 
