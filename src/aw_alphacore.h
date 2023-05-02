@@ -511,7 +511,7 @@ uint32_t aw_width_decoder (uint32_t width_encoded);
 
 
 
-
+int aw_pmd_anlt_auto_neg_status_get (mss_access_t *mss, uint32_t * link_good);
 
 
 int aw_pmd_anlt_logical_lane_num_set (mss_access_t *mss, uint32_t logical_lane, uint32_t an_no_attached);

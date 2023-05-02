@@ -71,6 +71,11 @@ uint32_t aw_width_decoder (uint32_t width_encoded) {
 
 
 
+int aw_pmd_anlt_auto_neg_status_get (mss_access_t *mss, uint32_t * link_good){
+    CHECK(pmd_read_field(mss, ETH_ANLT_STATUS_ADDR, ETH_ANLT_STATUS_AN_LINK_GOOD_MASK, ETH_ANLT_STATUS_AN_LINK_GOOD_OFFSET, link_good));
+
+    return AW_ERR_CODE_NONE;
+}
 
 
 
