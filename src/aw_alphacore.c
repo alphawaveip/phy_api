@@ -1756,13 +1756,13 @@ int aw_pmd_rx_equalize(mss_access_t *mss, aw_eq_type_t eq_type, uint32_t timeout
     aw_pmd_rxeq_prbs_set(mss, 1);
     aw_pmd_eqeval_req_set(mss, 1);
     poll_result = pmd_poll_field(mss, DIG_SOC_LANE_STAT_REG1_ADDR, DIG_SOC_LANE_STAT_REG1_OCTL_RX_LINKEVAL_ACK_MASK, DIG_SOC_LANE_STAT_REG1_OCTL_RX_LINKEVAL_ACK_OFFSET, 1, timeout_us);
+    aw_pmd_eqeval_req_set(mss, 0);
     if (poll_result == -1) {
         USR_PRINTF("ERROR: Timed out waiting for asserting rx linkeval ack\n");
     TRACE_EXIT("mss=0x%x, 0x%x, eq_type = %d, timeout_us = %d", mss->phy_offset, mss->lane_offset,  eq_type,  timeout_us);
         return AW_ERR_CODE_POLL_TIMEOUT;
     }
-    aw_pmd_eqeval_req_set(mss, 0);
-
+    
     poll_result = pmd_poll_field(mss, DIG_SOC_LANE_STAT_REG1_ADDR, DIG_SOC_LANE_STAT_REG1_OCTL_RX_LINKEVAL_ACK_MASK, DIG_SOC_LANE_STAT_REG1_OCTL_RX_LINKEVAL_ACK_OFFSET, 0, 10);
 
     if (poll_result == -1) {
