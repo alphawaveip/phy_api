@@ -25,6 +25,8 @@
 #define AW_MAX(a,b) (((a)>(b))?(a):(b))
 #define AW_MIN(a,b) (((a)<(b))?(a):(b))
 #define PI 3.14159265
+#define AW_ADV_ABILITIES   20
+#define AW_FEC_ABILITIES   5
 
 
 
@@ -122,8 +124,8 @@ typedef struct tx_hbridge_s {
     uint32_t lsb; 
     uint32_t bias_adj; 
     uint32_t rlm_ovr; 
-    uint8_t bias_adj_en; 
-    uint8_t rlm_ovr_en; 
+    uint32_t bias_adj_en; 
+    uint32_t rlm_ovr_en; 
 } tx_hbridge_t;
 
 
@@ -133,6 +135,7 @@ typedef struct aw_an_spec_s {
     uint32_t an_def_spec_rate[28];     
 
     uint32_t an_def_an_rate;        
+
     aw_an_newdef_t newdef1;         
     aw_an_newdef_t newdef2;         
     aw_an_newdef_t newdef3;         
@@ -250,6 +253,7 @@ typedef enum aw_pll_pstatus_e {
 typedef uint32_t aw_ffe_t[AW_FFE_NUM_TAPS];
 
 
+
 typedef int aw_ffe_signed_t[AW_FFE_NUM_TAPS];
 
 typedef struct aw_thresholds_s {
@@ -308,6 +312,7 @@ typedef struct aw_dsp_param_s {
     aw_thresholds_t thresholds;
     aw_slicers_t slicers;
 } aw_dsp_param_t;
+
 
 typedef struct aw_dcdiq_data_s {
     
@@ -507,11 +512,21 @@ typedef enum aw_rx_ffe_tap_count_e {
 
 
 
+
+
+
+
+
+
+
+
+
+
 uint32_t aw_width_decoder (uint32_t width_encoded);
 
 
 
-int aw_pmd_anlt_auto_neg_status_get (mss_access_t *mss, uint32_t * link_good);
+
 
 
 int aw_pmd_anlt_logical_lane_num_set (mss_access_t *mss, uint32_t logical_lane, uint32_t an_no_attached);
@@ -524,6 +539,10 @@ int aw_pmd_anlt_auto_neg_link_status_ovr_enable(mss_access_t *mss, uint32_t en);
 
 
 int aw_pmd_anlt_auto_neg_adv_ability_set (mss_access_t *mss, uint32_t *adv_ability, uint32_t *fec_ability, uint32_t nonce);
+
+
+
+int aw_pmd_anlt_lp_auto_neg_adv_ability_get (mss_access_t *mss, uint32_t * adv_ability, uint32_t *fec_ability);
 
 
 
@@ -543,9 +562,16 @@ int aw_pmd_anlt_auto_neg_start_set (mss_access_t *mss, uint32_t start);
 
 
 
+int aw_pmd_anlt_auto_neg_status_get (mss_access_t *mss, uint32_t * link_good);
+
+
+
 
 int aw_pmd_anlt_auto_neg_status_complete_get (mss_access_t *mss, uint32_t * an_complete);
 
+
+
+int aw_pmd_anlt_auto_neg_result_get (mss_access_t *mss, uint32_t no_consortium, uint32_t * an_result);
 
 
 
@@ -614,6 +640,10 @@ int aw_pmd_anlt_link_training_timeout_enable_set (mss_access_t *mss, uint32_t en
 
 
 
+
+
+
+
 int aw_pmd_refclk_termination_set(mss_access_t *mss, aw_refclk_term_mode_t lsrefbuf_term_mode);
 
 
@@ -649,8 +679,8 @@ int aw_pmd_txfir_config_set(mss_access_t *mss, aw_txfir_config_t *txfir_cfg, uin
 
 
 
-
 int aw_pmd_txfir_config_get(mss_access_t *mss, aw_txfir_config_t *txfir_cfg);
+
 
 
 
@@ -668,6 +698,9 @@ int aw_pmd_rx_pam4_precoder_override_set(mss_access_t *mss, uint32_t en);
 
 
 
+
+
+int aw_pmd_rx_pam4_precoder_enable_set(mss_access_t *mss, uint32_t gray_en, uint32_t plusd_en);
 
 
 
@@ -690,7 +723,7 @@ int aw_pmd_analog_loopback_set(mss_access_t *mss, uint32_t analog_loopback_enabl
 
 
 
-int aw_pmd_fep_clock_set(mss_access_t *mss, uint8_t clock_en);
+int aw_pmd_fep_clock_set(mss_access_t *mss, uint32_t clock_en);
 
 
 
@@ -727,7 +760,6 @@ int aw_pmd_rx_dfe_adapt_set(mss_access_t *mss, uint32_t dfe_adapt_enable);
 
 
 int aw_pmd_rx_background_adapt_enable_set(mss_access_t *mss, uint32_t rx_background_adapt);
-
 
 
 
@@ -1042,6 +1074,10 @@ int aw_pmd_rx_check_bist(mss_access_t *mss, aw_bist_mode_t bist_mode, uint32_t t
 
 
 
+
+
+
+
 int aw_pmd_eqeval_type_set(mss_access_t *mss, uint32_t eq_type);
 
 
@@ -1106,6 +1142,7 @@ typedef enum {
 
 
 
+
 int aw_pmd_nep_loopback_set(mss_access_t *mss, uint32_t nep_loopback_enable);
 
 
@@ -1127,6 +1164,21 @@ int aw_pmd_nep_loopback_set(mss_access_t *mss, uint32_t nep_loopback_enable);
 
 
 int aw_pmd_rd_data_pipeline_stages_set(mss_access_t *mss, uint32_t stages);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1167,6 +1219,8 @@ int aw_pmd_enable_pam4_mode(mss_access_t *mss, int enable);
 
 
 
+
+
 int aw_pmd_snr_vld_hys_thresh_set_from_target_snr(mss_access_t *mss, uint32_t target_snr_low, uint32_t target_snr_high);
 
 
@@ -1188,8 +1242,8 @@ int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable);
 
 int aw_tc_sm_conv(uint32_t v, uint32_t i);
 
-int aw_pmd_anlt_auto_neg_result_get (mss_access_t *mss, uint8_t no_consortium, uint32_t * an_result);
 
-int int aw_pmd_anlt_auto_neg_next_page_set(mss_access_t *mss, uint64_t an_tx_np);
+
+
 
 #endif 
