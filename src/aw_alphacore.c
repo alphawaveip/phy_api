@@ -21,7 +21,7 @@
 #include "stdlib.h"
 
 
-const char aw_library_version[] = "1.0.11";
+const char aw_library_version[] = "1.0.13";
 
 int aw_tc_sm_conv(uint32_t v, uint32_t i) {
     TRACE_ENTER("v = %d, i = %d", v,  i);
@@ -34,6 +34,7 @@ int aw_tc_sm_conv(uint32_t v, uint32_t i) {
     TRACE_EXIT("v = %d, i = %d", v,  i);
     return final_val;
 }
+
 
 uint32_t aw_width_decoder (uint32_t width_encoded) {
     TRACE_ENTER("width_encoded = %d", width_encoded);
@@ -71,11 +72,6 @@ uint32_t aw_width_decoder (uint32_t width_encoded) {
 
 
 
-int aw_pmd_anlt_auto_neg_status_get (mss_access_t *mss, uint32_t * link_good){
-    CHECK(pmd_read_field(mss, ETH_ANLT_STATUS_ADDR, ETH_ANLT_STATUS_AN_LINK_GOOD_MASK, ETH_ANLT_STATUS_AN_LINK_GOOD_OFFSET, link_good));
-
-    return AW_ERR_CODE_NONE;
-}
 
 
 
@@ -84,8 +80,8 @@ int aw_pmd_anlt_auto_neg_status_get (mss_access_t *mss, uint32_t * link_good){
 int aw_pmd_anlt_logical_lane_num_set (mss_access_t *mss, uint32_t logical_lane, uint32_t an_no_attached) {
     TRACE_ENTER("mss=0x%x, 0x%x, logical_lane = %d, an_no_attached = %d", mss->phy_offset, mss->lane_offset,  logical_lane,  an_no_attached);
     CHECK(pmd_write_field(mss, ETH_ANLT_CTRL_ADDR, ETH_ANLT_CTRL_ANLT_LANE_NUM_MASK, ETH_ANLT_CTRL_ANLT_LANE_NUM_OFFSET, logical_lane));
-    CHECK(pmd_write_field(mss, ETH_LT_PRBS_ADDR, ETH_LT_PRBS_LT_POLYNOMIAL_SEL_C92_MASK, ETH_LT_PRBS_LT_POLYNOMIAL_SEL_C92_OFFSET, logical_lane));
-    CHECK(pmd_write_field(mss, ETH_LT_PRBS_ADDR, ETH_LT_PRBS_LT_POLYNOMIAL_SEL_C136_MASK, ETH_LT_PRBS_LT_POLYNOMIAL_SEL_C136_OFFSET, logical_lane));
+    CHECK(pmd_write_field(mss, ETH_LT_PRBS_ADDR, ETH_LT_PRBS_LT_POLYNOMIAL_SEL_C92_MASK, ETH_LT_PRBS_LT_POLYNOMIAL_SEL_C92_OFFSET, 0x03&logical_lane));
+    CHECK(pmd_write_field(mss, ETH_LT_PRBS_ADDR, ETH_LT_PRBS_LT_POLYNOMIAL_SEL_C136_MASK, ETH_LT_PRBS_LT_POLYNOMIAL_SEL_C136_OFFSET, 0x03&logical_lane));
     CHECK(pmd_write_field(mss, ETH_ANLT_CTRL_ADDR, ETH_ANLT_CTRL_AN_NO_ATTACHED_MASK, ETH_ANLT_CTRL_AN_NO_ATTACHED_OFFSET, an_no_attached));
 
     TRACE_EXIT("mss=0x%x, 0x%x, logical_lane = %d, an_no_attached = %d", mss->phy_offset, mss->lane_offset,  logical_lane,  an_no_attached);
@@ -108,15 +104,17 @@ int aw_pmd_anlt_auto_neg_adv_ability_set (mss_access_t *mss, uint32_t *adv_abili
     uint32_t ability_1_temp = 0;
     uint32_t ability_2_temp = 0;
 
-    for (int i = 0; i<=19; i++) {
+    
+
+    for (int i = 0; i < AW_ADV_ABILITIES; i++) {
         if (i <= 10 && adv_ability[i] == 1) {
             ability_1_temp = ability_1_temp | (1 << (i + 5));
-        } else if (i > 10 && i <= 19 && adv_ability[i] == 1) {
+        } else if (i > 10 && i < AW_ADV_ABILITIES && adv_ability[i] == 1) {
             ability_2_temp = ability_2_temp | (1 << (i - 11));
         }
     }
     
-    for (int i = 0; i<=4; i++) {
+    for (int i = 0; i < AW_FEC_ABILITIES; i++) {
         if (fec_ability[i] == 1) {
             ability_2_temp = ability_2_temp | (1 << (i + 11));
         }
@@ -134,6 +132,42 @@ int aw_pmd_anlt_auto_neg_adv_ability_set (mss_access_t *mss, uint32_t *adv_abili
 
 }
 
+
+int aw_pmd_anlt_lp_auto_neg_adv_ability_get (mss_access_t *mss, uint32_t * adv_ability, uint32_t *fec_ability) {
+    TRACE_ENTER("mss=0x%x, 0x%x, *adv_ability = %d, *fec_ability = %d", mss->phy_offset, mss->lane_offset,  *adv_ability,  *fec_ability);
+    uint32_t ability_1_temp;
+    uint32_t ability_2_temp;
+
+    CHECK(pmd_read_field(mss, ETH_AN_LP_ADV_ABILITY_REG2_ADDR, ETH_AN_LP_ADV_ABILITY_REG2_AN_MR_LP_ADV_ABILITY_2_MASK, ETH_AN_LP_ADV_ABILITY_REG2_AN_MR_LP_ADV_ABILITY_2_OFFSET, &ability_1_temp));
+    CHECK(pmd_read_field(mss, ETH_AN_LP_ADV_ABILITY_REG3_ADDR, ETH_AN_LP_ADV_ABILITY_REG3_AN_MR_LP_ADV_ABILITY_3_MASK, ETH_AN_LP_ADV_ABILITY_REG3_AN_MR_LP_ADV_ABILITY_3_OFFSET, &ability_2_temp));
+
+    for (int i = 0; i < AW_ADV_ABILITIES; i++) {
+        if (i <= 10) {
+            if (((ability_1_temp >> (5+i)) & 1) == 1) {
+                adv_ability[i] = 1;
+            } else {
+                adv_ability[i] = 0;
+            }
+        } else if (i > 10 && i < AW_ADV_ABILITIES) {
+            if (((ability_2_temp >> (i - 11)) & 1) == 1) {
+                adv_ability[i] = 1;
+            } else {
+                adv_ability[i] = 0;
+            }
+        }
+    }
+
+    for (int i = 0; i < AW_FEC_ABILITIES; i++) {
+            if (((ability_2_temp >> (i + 11)) & 1) == 1) {
+                fec_ability[i] = 1;
+            } else {
+                fec_ability[i] = 0;
+            }
+
+    }
+    TRACE_EXIT("mss=0x%x, 0x%x, *adv_ability = %d, *fec_ability = %d", mss->phy_offset, mss->lane_offset,  *adv_ability,  *fec_ability);
+    return AW_ERR_CODE_NONE;
+}
 
 int aw_pmd_anlt_ms_per_ck_set(mss_access_t *mss, uint32_t ms_per_ck) {
     TRACE_ENTER("mss=0x%x, 0x%x, ms_per_ck = %d", mss->phy_offset, mss->lane_offset,  ms_per_ck);
@@ -172,6 +206,13 @@ int aw_pmd_anlt_auto_neg_start_set (mss_access_t *mss, uint32_t start){
 }
 
 
+int aw_pmd_anlt_auto_neg_status_get (mss_access_t *mss, uint32_t * link_good){
+    TRACE_ENTER("mss=0x%x, 0x%x, *link_good = %d", mss->phy_offset, mss->lane_offset,  *link_good);
+    CHECK(pmd_read_field(mss, ETH_ANLT_STATUS_ADDR, ETH_ANLT_STATUS_AN_LINK_GOOD_MASK, ETH_ANLT_STATUS_AN_LINK_GOOD_OFFSET, link_good));
+
+    TRACE_EXIT("mss=0x%x, 0x%x, *link_good = %d", mss->phy_offset, mss->lane_offset,  *link_good);
+    return AW_ERR_CODE_NONE;
+}
 
 int aw_pmd_anlt_auto_neg_status_complete_get (mss_access_t *mss, uint32_t * an_complete){
     TRACE_ENTER("mss=0x%x, 0x%x, *an_complete = %d", mss->phy_offset, mss->lane_offset,  *an_complete);
@@ -182,6 +223,77 @@ int aw_pmd_anlt_auto_neg_status_complete_get (mss_access_t *mss, uint32_t * an_c
     return AW_ERR_CODE_NONE;
 }
 
+int aw_pmd_anlt_auto_neg_result_get (mss_access_t *mss, uint32_t no_consortium, uint32_t * an_result){
+    TRACE_ENTER("mss=0x%x, 0x%x, no_consortium = %d, *an_result = %d", mss->phy_offset, mss->lane_offset,  no_consortium,  *an_result);
+    
+    uint32_t an_link_good;
+    CHECK(pmd_read_check_field(mss, ETH_ANLT_STATUS_ADDR, ETH_ANLT_STATUS_AN_LINK_GOOD_MASK, ETH_ANLT_STATUS_AN_LINK_GOOD_OFFSET, RD_EQ, &an_link_good,  1, 0 ));
+ 
+    if(no_consortium == 1) {
+        
+        uint32_t an_spec_1;
+        uint32_t an_spec_2;
+        uint32_t an_spec_3;
+        uint32_t an_spec_4;
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_1_MASK, ETH_AN_RESULT_REG1_AN_SPEC_1_OFFSET, &an_spec_1));
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_2_MASK, ETH_AN_RESULT_REG1_AN_SPEC_2_OFFSET, &an_spec_2));
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_3_MASK, ETH_AN_RESULT_REG1_AN_SPEC_3_OFFSET, &an_spec_3));
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG2_ADDR, ETH_AN_RESULT_REG2_AN_SPEC_4_MASK, ETH_AN_RESULT_REG2_AN_SPEC_4_OFFSET, &an_spec_4));
+
+        
+        uint32_t an_spec = an_spec_1;
+        an_spec = (an_spec_2 << 3)  | an_spec;
+        an_spec = (an_spec_3 << 5)  | an_spec;
+        an_spec = (an_spec_4 << 13) | an_spec;
+
+        
+        int cntr = 0;
+        for (int i = 0 ; i < 32 ; i++){
+            int bit = (an_spec >> i) & 1;
+            if (bit == 1){
+                cntr++;
+            }
+        }
+        if (cntr != 1){
+    TRACE_EXIT("mss=0x%x, 0x%x, no_consortium = %d, *an_result = %d", mss->phy_offset, mss->lane_offset,  no_consortium,  *an_result);
+            return AW_ERR_CODE_BAD_STATE;
+        }
+
+        
+        *an_result = log(an_spec)/log(2);
+    } else if (no_consortium == 0) {
+
+        
+        uint32_t an_econ_spec_1;
+        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG2_ADDR, ETH_AN_RESULT_REG2_AN_ECON_SPEC_MASK, ETH_AN_RESULT_REG2_AN_ECON_SPEC_OFFSET, &an_econ_spec_1));
+
+        
+        uint32_t an_spec = an_econ_spec_1;
+
+        
+        int cntr = 0;
+        for (int i = 0 ; i < 5 ; i++) {
+            int bit = (an_spec >> i) & 1;
+            if (bit == 1) {
+                cntr++;
+            }
+        }
+        if (cntr != 1) {
+    TRACE_EXIT("mss=0x%x, 0x%x, no_consortium = %d, *an_result = %d", mss->phy_offset, mss->lane_offset,  no_consortium,  *an_result);
+            return AW_ERR_CODE_BAD_STATE;
+        }
+
+        
+        *an_result = log(an_spec)/log(2);
+    } else {
+        USR_PRINTF("ERROR: Please set no_consortium field to either 0 or 1. Other values not accepted \n");
+    TRACE_EXIT("mss=0x%x, 0x%x, no_consortium = %d, *an_result = %d", mss->phy_offset, mss->lane_offset,  no_consortium,  *an_result);
+        return AW_ERR_CODE_BAD_STATE;
+    }
+
+    TRACE_EXIT("mss=0x%x, 0x%x, no_consortium = %d, *an_result = %d", mss->phy_offset, mss->lane_offset,  no_consortium,  *an_result);
+    return AW_ERR_CODE_NONE;
+}
 
 
 int aw_pmd_anlt_auto_neg_next_page_set(mss_access_t *mss, uint64_t an_tx_np) {
@@ -201,6 +313,10 @@ int aw_pmd_anlt_auto_neg_next_page_set(mss_access_t *mss, uint64_t an_tx_np) {
     return AW_ERR_CODE_NONE;
 
 }
+
+
+
+
 
 int aw_pmd_anlt_auto_neg_next_page_oui_compare_set(mss_access_t *mss, uint32_t np_expected_oui){
     TRACE_ENTER("mss=0x%x, 0x%x, np_expected_oui = %d", mss->phy_offset, mss->lane_offset,  np_expected_oui);
@@ -403,6 +519,13 @@ int aw_pmd_anlt_link_training_timeout_enable_set (mss_access_t *mss, uint32_t en
     return AW_ERR_CODE_NONE;
 }
 
+
+
+
+
+
+
+
 int aw_pmd_refclk_termination_set(mss_access_t *mss, aw_refclk_term_mode_t lsrefbuf_term_mode){
     TRACE_ENTER("mss=0x%x, 0x%x", mss->phy_offset, mss->lane_offset);
     CHECK(pmd_write_field(mss, CMN_REFCLK_ADDR, CMN_REFCLK_LSREFBUF_TERM_MODE_NT_MASK, CMN_REFCLK_LSREFBUF_TERM_MODE_NT_OFFSET, lsrefbuf_term_mode ));
@@ -442,6 +565,19 @@ int aw_pmd_force_signal_detect_config_set(mss_access_t *mss, aw_force_sigdet_mod
             return AW_ERR_CODE_INVALID_ARG_VALUE;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -530,6 +666,7 @@ int aw_pmd_txfir_config_get(mss_access_t *mss, aw_txfir_config_t *txfir_cfg){
     TRACE_EXIT("mss=0x%x, 0x%x", mss->phy_offset, mss->lane_offset);
     return AW_ERR_CODE_NONE;
 }
+
 
 int aw_pmd_tx_pam4_precoder_override_set(mss_access_t *mss, uint32_t en){
     TRACE_ENTER("mss=0x%x, 0x%x, en = %d", mss->phy_offset, mss->lane_offset,  en);
@@ -665,7 +802,7 @@ int aw_pmd_tx_dcd_iq_cal(mss_access_t *mss, uint32_t enable_d)
     return AW_ERR_CODE_NONE;        
 }
 
-int aw_pmd_fep_clock_set(mss_access_t *mss, uint8_t clock_en) {
+int aw_pmd_fep_clock_set(mss_access_t *mss, uint32_t clock_en) {
     TRACE_ENTER("mss=0x%x, 0x%x, clock_en = %d", mss->phy_offset, mss->lane_offset,  clock_en);
     CHECK(pmd_write_field(mss, TX_LOOPBACK_CNTRL_ADDR, TX_LOOPBACK_CNTRL_ENA_NT_MASK, TX_LOOPBACK_CNTRL_ENA_NT_OFFSET, clock_en));
     CHECK(pmd_write_field(mss, LOOPBACK_CNTRL_ADDR, LOOPBACK_CNTRL_ENA_NT_MASK, LOOPBACK_CNTRL_ENA_NT_OFFSET, clock_en));
@@ -792,17 +929,25 @@ int aw_pmd_rx_dfe_adapt_set(mss_access_t *mss, uint32_t dfe_adapt_enable){
 int aw_pmd_rx_background_adapt_enable_set(mss_access_t *mss, uint32_t rx_background_adapt)
 {
     TRACE_ENTER("mss=0x%x, 0x%x, rx_background_adapt = %d", mss->phy_offset, mss->lane_offset,  rx_background_adapt);
+    int32_t poll_result;
     if (rx_background_adapt == 1){
         CHECK(pmd_write_field(mss, RXMFSM_CTRL_ADDR, RXMFSM_CTRL_RXMFSM_EQBK_POWER_STATE_MASK, RXMFSM_CTRL_RXMFSM_EQBK_POWER_STATE_OFFSET, 0));
     }
     else {
         CHECK(pmd_write_field(mss, RXMFSM_CTRL_ADDR, RXMFSM_CTRL_RXMFSM_EQBK_POWER_STATE_MASK, RXMFSM_CTRL_RXMFSM_EQBK_POWER_STATE_OFFSET, 7));
     }
+    CHECK(pmd_write_field(mss, RXIFFSM_CTRL_ADDR, RXIFFSM_CTRL_RXIFFSM_GENERAL_REQ_A_MASK, RXIFFSM_CTRL_RXIFFSM_GENERAL_REQ_A_OFFSET, 1));
+    poll_result = pmd_poll_field(mss, RXIFFSM_STAT_ADDR, RXIFFSM_STAT_RXIFFSM_GENERAL_ACK_MASK, RXIFFSM_STAT_RXIFFSM_GENERAL_ACK_OFFSET, 1, 1000000); 
+    CHECK(pmd_write_field(mss, RXIFFSM_CTRL_ADDR, RXIFFSM_CTRL_RXIFFSM_GENERAL_REQ_A_MASK, RXIFFSM_CTRL_RXIFFSM_GENERAL_REQ_A_OFFSET, 0));
+    if (poll_result == -1) {
+        USR_PRINTF("ERROR: Timed out waiting for asserting RXIFFSM_GENERAL_ACK\n");
+    TRACE_EXIT("mss=0x%x, 0x%x, rx_background_adapt = %d", mss->phy_offset, mss->lane_offset,  rx_background_adapt);
+        return AW_ERR_CODE_POLL_TIMEOUT;
+    }
+
     TRACE_EXIT("mss=0x%x, 0x%x, rx_background_adapt = %d", mss->phy_offset, mss->lane_offset,  rx_background_adapt);
     return AW_ERR_CODE_NONE;
 }
-
-
 
 
 
@@ -822,6 +967,13 @@ int aw_pmd_rxeq_prbs_set(mss_access_t *mss, uint32_t prbs_en) {
     TRACE_EXIT("mss=0x%x, 0x%x, prbs_en = %d", mss->phy_offset, mss->lane_offset,  prbs_en);
     return AW_ERR_CODE_NONE;
 }
+
+
+
+
+
+
+
 
 
 
@@ -1717,6 +1869,13 @@ int aw_pmd_rx_check_bist(mss_access_t *mss, aw_bist_mode_t bist_mode, uint32_t t
 }
 
 
+
+
+
+
+
+
+
 int aw_pmd_eqeval_type_set(mss_access_t *mss, uint32_t eq_type) {
     TRACE_ENTER("mss=0x%x, 0x%x, eq_type = %d", mss->phy_offset, mss->lane_offset,  eq_type);
     CHECK(pmd_write_field(mss, DIG_SOC_LANE_OVRD_REG2_ADDR, DIG_SOC_LANE_OVRD_REG2_ICTL_RX_LINKEVAL_TYPE_A_MASK, DIG_SOC_LANE_OVRD_REG2_ICTL_RX_LINKEVAL_TYPE_A_OFFSET, eq_type));
@@ -1762,7 +1921,7 @@ int aw_pmd_rx_equalize(mss_access_t *mss, aw_eq_type_t eq_type, uint32_t timeout
     TRACE_EXIT("mss=0x%x, 0x%x, eq_type = %d, timeout_us = %d", mss->phy_offset, mss->lane_offset,  eq_type,  timeout_us);
         return AW_ERR_CODE_POLL_TIMEOUT;
     }
-    
+
     poll_result = pmd_poll_field(mss, DIG_SOC_LANE_STAT_REG1_ADDR, DIG_SOC_LANE_STAT_REG1_OCTL_RX_LINKEVAL_ACK_MASK, DIG_SOC_LANE_STAT_REG1_OCTL_RX_LINKEVAL_ACK_OFFSET, 0, 10);
 
     if (poll_result == -1) {
@@ -1839,12 +1998,19 @@ int aw_pmd_rx_cdr_lock_get(mss_access_t *mss, uint32_t *rx_cdr_lock) {
 
 
 
-int aw_pmd_rx_gray_code_mapping_set(mss_access_t *mss, uint8_t gray_code_map) {
+
+
+
+
+
+
+
+int aw_pmd_rx_gray_code_mapping_set(mss_access_t *mss, uint32_t gray_code_map) {
     TRACE_ENTER("mss=0x%x, 0x%x, gray_code_map = %d", mss->phy_offset, mss->lane_offset,  gray_code_map);
-    uint8_t el3 = gray_code_map & 0x3;
-    uint8_t el1 = (gray_code_map >> 2) & 0x3;
-    uint8_t eh1 = (gray_code_map >> 4) & 0x3;
-    uint8_t eh3 = (gray_code_map >> 6) & 0x3;
+    uint32_t el3 = gray_code_map & 0x3;
+    uint32_t el1 = (gray_code_map >> 2) & 0x3;
+    uint32_t eh1 = (gray_code_map >> 4) & 0x3;
+    uint32_t eh3 = (gray_code_map >> 6) & 0x3;
 
     CHECK(pmd_write_field(mss, RX_DEMAPPER_ADDR, RX_DEMAPPER_EL3_VAL_NT_MASK, RX_DEMAPPER_EL3_VAL_NT_OFFSET, el3));
     CHECK(pmd_write_field(mss, RX_DEMAPPER_ADDR, RX_DEMAPPER_EL1_VAL_NT_MASK, RX_DEMAPPER_EL1_VAL_NT_OFFSET, el1));
@@ -1856,7 +2022,7 @@ int aw_pmd_rx_gray_code_mapping_set(mss_access_t *mss, uint8_t gray_code_map) {
 }
 
 
-int aw_pmd_tx_gray_code_mapping_set(mss_access_t *mss, uint8_t gray_code_map){
+int aw_pmd_tx_gray_code_mapping_set(mss_access_t *mss, uint32_t gray_code_map){
     TRACE_ENTER("mss=0x%x, 0x%x, gray_code_map = %d", mss->phy_offset, mss->lane_offset,  gray_code_map);
 
     CHECK(pmd_write_field(mss, TX_DATAPATH_REG1_ADDR, TX_DATAPATH_REG1_GRAY_CODE_MAPPING_NT_MASK, TX_DATAPATH_REG1_GRAY_CODE_MAPPING_NT_OFFSET, gray_code_map));
@@ -1864,6 +2030,9 @@ int aw_pmd_tx_gray_code_mapping_set(mss_access_t *mss, uint8_t gray_code_map){
     TRACE_EXIT("mss=0x%x, 0x%x, gray_code_map = %d", mss->phy_offset, mss->lane_offset,  gray_code_map);
     return AW_ERR_CODE_NONE;
 }
+
+
+
 
 
 
@@ -1919,83 +2088,4 @@ int aw_pmd_snr_vld_enable_set(mss_access_t *mss, uint32_t vld_enable){
     CHECK(pmd_write_field(mss, RX_SNR_REG1_ADDR, RX_SNR_REG1_VLD_ENABLE_A_MASK, RX_SNR_REG1_VLD_ENABLE_A_OFFSET, vld_enable));
     TRACE_EXIT("mss=0x%x, 0x%x, vld_enable = %d", mss->phy_offset, mss->lane_offset,  vld_enable);
     return AW_ERR_CODE_NONE;
-}
-
-int aw_pmd_anlt_auto_neg_result_get (mss_access_t *mss, uint8_t no_consortium, uint32_t * an_result){
-
-    uint32_t an_link_good;
-    CHECK(pmd_read_check_field(mss, ETH_ANLT_STATUS_ADDR, ETH_ANLT_STATUS_AN_LINK_GOOD_MASK, ETH_ANLT_STATUS_AN_LINK_GOOD_OFFSET, RD_EQ, &an_link_good,  1, 0 ));
- 
-    if(no_consortium == 1) {
-
-        uint32_t an_spec_1;
-        uint32_t an_spec_2;
-        uint32_t an_spec_3;
-        uint32_t an_spec_4;
-        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_1_MASK, ETH_AN_RESULT_REG1_AN_SPEC_1_OFFSET, &an_spec_1));
-        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_2_MASK, ETH_AN_RESULT_REG1_AN_SPEC_2_OFFSET, &an_spec_2));
-        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG1_ADDR, ETH_AN_RESULT_REG1_AN_SPEC_3_MASK, ETH_AN_RESULT_REG1_AN_SPEC_3_OFFSET, &an_spec_3));
-        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG2_ADDR, ETH_AN_RESULT_REG2_AN_SPEC_4_MASK, ETH_AN_RESULT_REG2_AN_SPEC_4_OFFSET, &an_spec_4));
-
-
-        uint32_t an_spec = an_spec_1;
-        an_spec = (an_spec_2 << 3)  | an_spec;
-        an_spec = (an_spec_3 << 5)  | an_spec;
-        an_spec = (an_spec_4 << 13) | an_spec;
-
-        // there should only be 1 bit that is 1, all other bits should be 0
-        int cntr = 0;
-        for (int i = 0 ; i < 32 ; i++){
-            int bit = (an_spec >> i) & 1;
-            if (bit == 1){
-                cntr++;
-            }
-        }
-        if (cntr != 1){
-            return AW_ERR_CODE_BAD_STATE;
-        }
-
-
-        *an_result = log(an_spec)/log(2);
-    } else if (no_consortium == 0) {
-
-        uint32_t an_econ_spec_1;
-        CHECK(pmd_read_field(mss, ETH_AN_RESULT_REG2_ADDR, ETH_AN_RESULT_REG2_AN_ECON_SPEC_MASK, ETH_AN_RESULT_REG2_AN_ECON_SPEC_OFFSET, &an_econ_spec_1));
-
-        uint32_t an_spec = an_econ_spec_1;
-
-        int cntr = 0;
-        for (int i = 0 ; i < 5 ; i++) {
-            int bit = (an_spec >> i) & 1;
-            if (bit == 1) {
-                cntr++;
-            }
-        }
-        if (cntr != 1) {
-            return AW_ERR_CODE_BAD_STATE;
-        }
-
-        *an_result = log(an_spec)/log(2);
-    } else {
-        USR_PRINTF("ERROR: Please set no_consortium field to either 0 or 1. Other values not accepted \n");
-        return AW_ERR_CODE_BAD_STATE;
-    }
-
-    return AW_ERR_CODE_NONE;
-}
-
-int aw_pmd_anlt_auto_neg_next_page_set(mss_access_t *mss, uint64_t an_tx_np) {
-    uint32_t an_mr_np_tx_1 = (an_tx_np & 0xFFFF);
-    uint32_t an_mr_np_tx_2 = (an_tx_np >> 16) & 0xFFFF;
-    uint32_t an_mr_np_tx_3 = (an_tx_np >> 32) & 0xFFFF;
-
-    CHECK(pmd_write_field(mss,  ETH_AN_NP_REG1_ADDR, ETH_AN_NP_REG1_AN_MR_NP_TX_1_MASK, ETH_AN_NP_REG1_AN_MR_NP_TX_1_OFFSET, an_mr_np_tx_1));
-    CHECK(pmd_write_field(mss,  ETH_AN_NP_REG2_ADDR, ETH_AN_NP_REG2_AN_MR_NP_TX_2_MASK, ETH_AN_NP_REG2_AN_MR_NP_TX_2_OFFSET, an_mr_np_tx_2));
-    CHECK(pmd_write_field(mss,  ETH_AN_NP_REG3_ADDR, ETH_AN_NP_REG3_AN_MR_NP_TX_3_MASK, ETH_AN_NP_REG3_AN_MR_NP_TX_3_OFFSET, an_mr_np_tx_3));
-
-    //now that NP is loaded, trigger NP
-    CHECK(pmd_write_field(mss,  ETH_AN_NP_REG3_ADDR, ETH_AN_NP_REG3_AN_MR_NEXT_PAGE_LOADED_MASK, ETH_AN_NP_REG3_AN_MR_NEXT_PAGE_LOADED_OFFSET, 1));
-
-    return AW_ERR_CODE_NONE;
-
 }
