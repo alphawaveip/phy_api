@@ -763,6 +763,7 @@ int aw_pmd_rx_background_adapt_enable_set(mss_access_t *mss, uint32_t rx_backgro
 
 
 
+int aw_pmd_rx_background_adapt_enable_get(mss_access_t *mss, uint32_t *rx_bkgrnd_adapt_enable);
 
 
 
