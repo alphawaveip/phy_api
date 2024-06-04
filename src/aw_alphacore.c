@@ -21,7 +21,7 @@
 #include "stdlib.h"
 
 
-const char aw_library_version[] = "1.0.13";
+const char aw_library_version[] = "1.0.14";
 
 int aw_tc_sm_conv(uint32_t v, uint32_t i) {
     TRACE_ENTER("v = %d, i = %d", v,  i);
@@ -949,6 +949,18 @@ int aw_pmd_rx_background_adapt_enable_set(mss_access_t *mss, uint32_t rx_backgro
     return AW_ERR_CODE_NONE;
 }
 
+int aw_pmd_rx_background_adapt_enable_get(mss_access_t *mss, uint32_t *rx_bkgrnd_adapt_enable){
+    TRACE_ENTER("mss=0x%x, 0x%x, *rx_bkgrnd_adapt_enable = %d", mss->phy_offset, mss->lane_offset,  *rx_bkgrnd_adapt_enable);
+    uint32_t adapt_en;
+    CHECK(pmd_read_field(mss, RXMFSM_CTRL_ADDR, RXMFSM_CTRL_RXMFSM_EQBK_POWER_STATE_MASK, RXMFSM_CTRL_RXMFSM_EQBK_POWER_STATE_OFFSET, &adapt_en));
+    if (adapt_en == 0){
+        *rx_bkgrnd_adapt_enable = 1;
+    } else {
+        *rx_bkgrnd_adapt_enable = 0;
+    }
+    TRACE_EXIT("mss=0x%x, 0x%x, *rx_bkgrnd_adapt_enable = %d", mss->phy_offset, mss->lane_offset,  *rx_bkgrnd_adapt_enable);
+    return AW_ERR_CODE_NONE;
+}
 
 
 
